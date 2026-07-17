@@ -3,7 +3,7 @@
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LunarCalendarWidget } from "@/components/lunar-calendar-widget";
 import { Clock, Home } from "lucide-react";
-import pkg from '../../../../package.json';
+import pkg from '../../../package.json';
 import Link from 'next/link';
 import Header from '@/components/sections/header'
 import Footer from '@/components/sections/footer'

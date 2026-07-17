@@ -2,7 +2,7 @@
 
 import { Clock, MoonStar, Home } from "lucide-react";
 import Link from "next/link";
-import pkg from '../../../../package.json';
+import pkg from '../../../package.json';
 import { ThemeToggle } from "@/components/theme-toggle";
 import { usePathname } from "next/navigation";
 
