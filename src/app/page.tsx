@@ -1,11 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Clock, MoonStar } from "lucide-react";
-import pkg from '../../package.json';
-import { ThemeToggle } from "@/components/theme-toggle";
 import Footer from "@/components/sections/footer";
-import Link from 'next/link';
 
 import { HeroSection } from "@/components/sections/hero-section";
 import { ShowcaseSection } from "@/components/sections/showcase-section";
