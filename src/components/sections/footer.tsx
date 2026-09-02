@@ -65,6 +65,9 @@ export default function Footer() {
                     <Link href="/calendar" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
                         Calendar
                     </Link>
+                    <Link href="/holidays" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
+                        Holidays
+                    </Link>
                     <a href="/#playground" className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
                         Playground
                     </a>

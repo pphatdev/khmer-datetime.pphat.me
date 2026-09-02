@@ -2,19 +2,15 @@
 
 import { useState, useMemo, useEffect, useTransition, useCallback, memo } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { FormatDateTime } from '@pphatdev/format-datetime';
 import {
     ChevronLeft,
     ChevronRight,
     MoonStar,
     Globe,
-    Calendar as CalendarIcon,
     Sparkles,
-    Search,
-    ListFilter,
-    CalendarDays,
-    ArrowUpRight,
-    X
+    ArrowUpRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
@@ -22,7 +18,6 @@ import {
     fetchCambodiaHolidays,
     formatDateKey,
     PublicHoliday,
-    KHMER_HOLIDAY_NAMES,
     SHORT_KHMER_HOLIDAY_NAMES
 } from '@/lib/holidays';
 import { DateDetailPopup } from '@/components/date-detail-popup';
@@ -39,123 +34,120 @@ interface CalendarCell {
     isSunday: boolean;
     isSaturday: boolean;
     isHolyDay: boolean;
-    holiday: PublicHoliday | undefined;
+    holiday?: PublicHoliday;
     lunarDayNum: string;
     lunarPhase: string;
     isFullMoon: boolean;
     isNewMoon: boolean;
 }
 
-interface DayCellProps {
+const DayCell = memo(function DayCell({
+    cell,
+    onSelect,
+}: {
     cell: CalendarCell;
     onSelect: (date: Date) => void;
-}
+}) {
+    const {
+        date,
+        isCurrentMonth,
+        isTodayCell,
+        isSunday,
+        isSaturday,
+        isHolyDay,
+        holiday,
+        lunarDayNum,
+        lunarPhase,
+        isFullMoon,
+        isNewMoon,
+    } = cell;
 
-const DayCell = memo(function DayCell({ cell, onSelect }: DayCellProps) {
-    const { date, isCurrentMonth, isTodayCell, isSunday, isSaturday, isHolyDay, holiday, lunarDayNum, lunarPhase, isFullMoon, isNewMoon } = cell;
-    const hasHoliday = !!holiday;
-    const isRedDay = isSunday || hasHoliday;
-    const isYellowDay = isSaturday && !hasHoliday;
-    const khmerHolidayName = holiday 
-        ? (SHORT_KHMER_HOLIDAY_NAMES[holiday.name] || KHMER_HOLIDAY_NAMES[holiday.name] || holiday.name) 
-        : '';
-    const fullKhmerHolidayName = holiday 
-        ? (KHMER_HOLIDAY_NAMES[holiday.name] || holiday.name) 
-        : '';
+    const hasHoliday = Boolean(holiday);
+    const khmerHolidayName = holiday ? (SHORT_KHMER_HOLIDAY_NAMES[holiday.name] || holiday.name) : '';
+    const fullKhmerHolidayName = holiday ? (SHORT_KHMER_HOLIDAY_NAMES[holiday.name] || holiday.name) : '';
 
     return (
         <div
             onClick={() => onSelect(date)}
             className={cn(
-                "relative flex flex-col items-center justify-between p-1 sm:p-1.5 md:p-2 min-h-16 sm:min-h-20 md:min-h-24 rounded-xl sm:rounded-2xl border transition-all duration-200 group/cell overflow-hidden cursor-pointer",
+                "min-h-16 sm:min-h-20 md:min-h-24 p-1 sm:p-2 rounded-xl sm:rounded-2xl transition-all duration-200 border flex flex-col justify-between relative group/cell cursor-pointer select-none",
+                // Current vs other month
                 isCurrentMonth
-                    ? isRedDay
-                        ? "bg-rose-500/10 dark:bg-rose-500/15 border-rose-500/30 dark:border-rose-500/30 hover:border-rose-500 hover:bg-rose-500/20 hover:shadow-md hover:shadow-rose-500/15"
-                        : isYellowDay
-                            ? "bg-amber-500/10 dark:bg-amber-500/15 border-amber-500/30 dark:border-amber-500/30 hover:border-amber-500 hover:bg-amber-500/20 hover:shadow-md hover:shadow-amber-500/15"
-                            : "bg-white/40 dark:bg-white/5 border-neutral-200/60 dark:border-white/5 hover:border-teal-500/30 hover:bg-teal-500/5 dark:hover:bg-teal-500/10 hover:shadow-md hover:shadow-teal-500/10"
-                    : "bg-transparent border-transparent opacity-25",
-                isTodayCell && "ring-2 ring-teal-500/60 border-teal-500/60 bg-teal-500/10 dark:bg-teal-500/20 shadow-sm shadow-teal-500/20"
+                    ? "bg-white/70 dark:bg-white/4 border-neutral-200/80 dark:border-white/10 hover:border-teal-500/50 hover:bg-teal-50/30 dark:hover:bg-teal-950/20 hover:shadow-md hover:-translate-y-0.5"
+                    : "bg-neutral-50/40 dark:bg-white/1 border-transparent opacity-35 hover:opacity-75 hover:bg-neutral-100/50 dark:hover:bg-white/5",
+                // Today styling
+                isTodayCell && "ring-2 ring-teal-500 ring-offset-2 ring-offset-white dark:ring-offset-neutral-950 bg-teal-50/40 dark:bg-teal-950/30 border-teal-500/40",
+                // Holy day subtle background
+                isCurrentMonth && isHolyDay && !isTodayCell && "bg-amber-50/30 dark:bg-amber-950/15 border-amber-500/20",
+                // Holiday subtle glow
+                isCurrentMonth && hasHoliday && !isTodayCell && "border-rose-500/30 bg-rose-50/20 dark:bg-rose-950/15"
             )}
         >
-            {isCurrentMonth && isHolyDay ? (
-                <div 
-                    className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 z-20 flex items-center justify-center p-0.5 rounded-full bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/25 shadow-2xs backdrop-blur-xs" 
-                    title="ថ្ងៃសីល (Buddhist Holy Day)"
+            {/* Top Row: Solar Day Number + Badges */}
+            <div className="flex items-center justify-between gap-0.5">
+                <span
+                    className={cn(
+                        "text-[11px] sm:text-xs md:text-sm font-bold w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-colors",
+                        isTodayCell
+                            ? "bg-teal-500 text-white font-extrabold shadow-sm"
+                            : isSunday
+                                ? "text-rose-600 dark:text-rose-400 font-extrabold"
+                                : isSaturday
+                                    ? "text-amber-500 dark:text-amber-400 font-extrabold"
+                                    : "text-neutral-700 dark:text-neutral-300"
+                    )}
                 >
-                    <img 
-                        src="/buddha.png" 
-                        alt="ថ្ងៃសីល" 
-                        className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 object-contain" 
-                    />
-                </div>
-            ) : (
-                <>
-                    {isCurrentMonth && isFullMoon && (
-                        <div className="absolute top-1 right-1 sm:top-2 sm:right-2 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-yellow-400 shadow-[0_0_8px_rgba(250,204,21,1)]" title="Full Moon" />
-                    )}
-                    {isCurrentMonth && isNewMoon && (
-                        <div className="absolute top-1 right-1 sm:top-2 sm:right-2 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-slate-800 dark:bg-slate-300 shadow-[0_0_8px_rgba(100,116,139,0.5)]" title="Dark Moon" />
-                    )}
-                </>
-            )}
-            {isCurrentMonth && hasHoliday && (
-                <div className="absolute top-1 left-1 sm:top-2 sm:left-2 flex items-center gap-0.5 text-rose-600 dark:text-rose-400" title={`${fullKhmerHolidayName} (${holiday?.name})`}>
-                    <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-rose-500/20" />
-                </div>
-            )}
-            <span className={cn(
-                "text-xs sm:text-base md:text-xl font-bold z-10 leading-tight",
-                isRedDay
-                    ? isCurrentMonth
-                        ? "text-rose-600 dark:text-rose-400 font-extrabold"
-                        : "text-rose-400/40 dark:text-rose-400/30"
-                    : isYellowDay
-                        ? isCurrentMonth
+                    {date.getDate()}
+                </span>
+
+                {/* Holy Day Indicator Icon */}
+                {isHolyDay && isCurrentMonth && (
+                    <div
+                        className="flex items-center"
+                        title={
+                            isFullMoon
+                                ? "ពេញបូណ៌មី (Full Moon - ថ្ងៃសីល)"
+                                : isNewMoon
+                                    ? "ដាច់ខែ (New Moon - ថ្ងៃសីល)"
+                                    : "ថ្ងៃសីល (Buddhist Holy Day)"
+                        }
+                    >
+                        {isFullMoon ? (
+                            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-amber-400 border border-amber-500 shadow-xs shadow-amber-400/50" />
+                        ) : isNewMoon ? (
+                            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-neutral-900 dark:bg-neutral-100 border border-neutral-600 dark:border-neutral-400 shadow-xs" />
+                        ) : (
+                            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-amber-500/80 border border-amber-500" />
+                        )}
+                    </div>
+                )}
+            </div>
+
+            {/* Middle: Lunar Date (Day number + Waxing/Waning phase) */}
+            <div className="flex flex-col items-center justify-center text-center my-auto py-0.5">
+                <span
+                    className={cn(
+                        "text-[9px] sm:text-[11px] md:text-xs font-bold font-kantumruy leading-tight truncate max-w-full tracking-tight",
+                        isHolyDay && isCurrentMonth
                             ? "text-amber-600 dark:text-amber-400 font-extrabold"
-                            : "text-amber-400/40 dark:text-amber-400/30"
-                        : isTodayCell 
-                            ? "text-teal-700 dark:text-teal-400" 
-                            : isCurrentMonth 
-                                ? "text-neutral-900 dark:text-neutral-100" 
-                                : "text-neutral-500"
-            )}>
-                {date.getDate()}
-            </span>
-            <div className="flex flex-col items-center z-10 max-w-full px-0.5 my-0.5">
-                <span className={cn(
-                    "text-[9px] sm:text-[11px] md:text-xs font-medium leading-none font-kantumruy",
-                    isRedDay
-                        ? isCurrentMonth
-                            ? "text-rose-600 dark:text-rose-400 font-bold"
-                            : "text-rose-400/30"
-                        : isYellowDay
-                            ? isCurrentMonth
-                                ? "text-amber-600 dark:text-amber-400 font-bold"
-                                : "text-amber-400/30"
-                            : isCurrentMonth 
-                                ? "text-teal-600 dark:text-teal-400" 
-                                : "text-neutral-400/50"
-                )}>
+                            : "text-neutral-800 dark:text-neutral-200"
+                    )}
+                >
                     {lunarDayNum}
                 </span>
-                <span className={cn(
-                    "text-[7px] sm:text-[9px] md:text-[10px] mt-0.5 font-kantumruy truncate max-w-full text-center leading-none",
-                    isRedDay
-                        ? isCurrentMonth
-                            ? "text-rose-600/80 dark:text-rose-400/80 font-medium"
-                            : "text-rose-400/25"
-                        : isYellowDay
-                            ? isCurrentMonth
-                                ? "text-amber-600/80 dark:text-amber-400/80 font-medium"
-                                : "text-amber-400/25"
-                            : isCurrentMonth 
-                                ? "text-neutral-500 dark:text-neutral-400" 
-                                : "text-neutral-400/40"
-                )}>
+                <span
+                    className={cn(
+                        "text-[7.5px] sm:text-[9px] md:text-[10px] font-medium font-kantumruy leading-tight truncate max-w-full",
+                        isHolyDay && isCurrentMonth
+                            ? "text-amber-600/90 dark:text-amber-400/90 font-bold"
+                            : "text-neutral-500 dark:text-neutral-400"
+                    )}
+                >
                     {lunarPhase}
                 </span>
             </div>
+
+            {/* Bottom: Holiday Badge (if applicable) */}
             {isCurrentMonth && hasHoliday ? (
                 <div 
                     className="w-full mt-0.5 px-1 py-0.5 rounded-md bg-rose-500/15 dark:bg-rose-500/25 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-[7px] sm:text-[8px] md:text-[9.5px] font-bold font-kantumruy truncate text-center leading-tight shadow-2xs z-10"
@@ -171,7 +163,7 @@ const DayCell = memo(function DayCell({ cell, onSelect }: DayCellProps) {
     );
 });
 
-// ─── Loading Skeletons ───────────────────────────────────────────────────────
+// ─── Loading Skeleton ───────────────────────────────────────────────────────
 
 function CalendarGridSkeleton() {
     return (
@@ -190,34 +182,6 @@ function CalendarGridSkeleton() {
                         <div className="w-6 sm:w-8 h-2 rounded bg-neutral-200/50 dark:bg-white/5" />
                     </div>
                     <div className="h-1.5 sm:h-2" />
-                </div>
-            ))}
-        </div>
-    );
-}
-
-function PublicHolidaysSkeleton() {
-    return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pr-1 animate-pulse">
-            {Array.from({ length: 6 }).map((_, i) => (
-                <div
-                    key={i}
-                    className="p-3.5 sm:p-4 rounded-2xl bg-neutral-100/60 dark:bg-white/5 border border-neutral-200/50 dark:border-white/5 flex flex-col justify-between gap-3 min-h-32"
-                >
-                    <div className="flex items-start justify-between gap-2">
-                        <div className="space-y-2 flex-1">
-                            <div className="flex items-center gap-2">
-                                <div className="w-20 h-5 rounded-full bg-neutral-200/80 dark:bg-white/10" />
-                                <div className="w-10 h-3 rounded bg-neutral-200/50 dark:bg-white/5" />
-                            </div>
-                            <div className="w-3/4 h-5 rounded-md bg-neutral-200/80 dark:bg-white/10" />
-                            <div className="w-1/2 h-3.5 rounded-md bg-neutral-200/50 dark:bg-white/5" />
-                        </div>
-                        <div className="w-8 h-8 rounded-xl bg-neutral-200/80 dark:bg-white/10 shrink-0" />
-                    </div>
-                    <div className="pt-2 border-t border-neutral-200/40 dark:border-white/5 flex items-center justify-between">
-                        <div className="w-28 h-3.5 rounded bg-neutral-200/50 dark:bg-white/5" />
-                    </div>
                 </div>
             ))}
         </div>
@@ -274,12 +238,6 @@ export function LunarCalendarWidget() {
         return null;
     });
     const [holidays, setHolidays] = useState<PublicHoliday[]>([]);
-    const [isLoadingHolidays, setIsLoadingHolidays] = useState(false);
-    const [activeTab, setActiveTab] = useState<'calendar' | 'holidays'>(() => {
-        return searchParams.get('tab') === 'holidays' ? 'holidays' : 'calendar';
-    });
-    const [holidaySearch, setHolidaySearch] = useState('');
-    const [holidayMonth, setHolidayMonth] = useState<string>('all');
     const [isPending, startTransition] = useTransition();
 
     const currentYear = currentDate.getFullYear();
@@ -290,7 +248,7 @@ export function LunarCalendarWidget() {
     }, []);
 
     // Fast non-blocking URL search params helper
-    const updateUrlParams = useCallback((targetDate: Date, tabName?: string, selDate?: Date | null, loc?: string) => {
+    const updateUrlParams = useCallback((targetDate: Date, selDate?: Date | null, loc?: string) => {
         const currentSearch = typeof window !== 'undefined' ? window.location.search : searchParams.toString();
         const params = new URLSearchParams(currentSearch);
         params.set('year', String(targetDate.getFullYear()));
@@ -300,12 +258,6 @@ export function LunarCalendarWidget() {
             params.set('date', formatDateKey(selDate));
         } else {
             params.delete('date');
-        }
-
-        if (tabName && tabName !== 'calendar') {
-            params.set('tab', tabName);
-        } else {
-            params.delete('tab');
         }
 
         if (loc && loc !== 'km-KH') {
@@ -328,14 +280,10 @@ export function LunarCalendarWidget() {
         const dateParam = searchParams.get('date');
         const yearParam = searchParams.get('year');
         const monthParam = searchParams.get('month');
-        const tabParam = searchParams.get('tab');
         const localeParam = searchParams.get('locale');
 
         if (localeParam && localeParam !== locale) {
             setLocale(localeParam);
-        }
-        if (tabParam === 'holidays' || tabParam === 'calendar') {
-            setActiveTab(tabParam);
         }
 
         if (dateParam) {
@@ -369,19 +317,13 @@ export function LunarCalendarWidget() {
     // Fetch public holidays dynamically for the current year
     useEffect(() => {
         let isMounted = true;
-        setIsLoadingHolidays(true);
         fetchCambodiaHolidays(currentYear)
             .then(data => {
                 if (isMounted) {
                     setHolidays(data);
-                    setIsLoadingHolidays(false);
                 }
             })
-            .catch(() => {
-                if (isMounted) {
-                    setIsLoadingHolidays(false);
-                }
-            });
+            .catch(() => {});
 
         return () => {
             isMounted = false;
@@ -490,61 +432,45 @@ export function LunarCalendarWidget() {
 
     const handleSelectDate = useCallback((date: Date) => {
         setSelectedDate(date);
-        updateUrlParams(currentDate, activeTab, date, locale);
-    }, [currentDate, activeTab, locale, updateUrlParams]);
+        updateUrlParams(currentDate, date, locale);
+    }, [currentDate, locale, updateUrlParams]);
 
     const nextMonth = useCallback(() => {
         startTransition(() => {
             const next = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
             setCurrentDate(next);
-            updateUrlParams(next, activeTab, selectedDate, locale);
+            updateUrlParams(next, selectedDate, locale);
         });
-    }, [currentDate, activeTab, selectedDate, locale, updateUrlParams]);
+    }, [currentDate, selectedDate, locale, updateUrlParams]);
 
     const prevMonth = useCallback(() => {
         startTransition(() => {
             const prev = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
             setCurrentDate(prev);
-            updateUrlParams(prev, activeTab, selectedDate, locale);
+            updateUrlParams(prev, selectedDate, locale);
         });
-    }, [currentDate, activeTab, selectedDate, locale, updateUrlParams]);
+    }, [currentDate, selectedDate, locale, updateUrlParams]);
 
     const jumpToToday = useCallback(() => {
         startTransition(() => {
             const now = new Date();
             setCurrentDate(now);
             setSelectedDate(now);
-            updateUrlParams(now, activeTab, now, locale);
-        });
-    }, [activeTab, locale, updateUrlParams]);
-
-    const jumpToDate = useCallback((dateStr: string) => {
-        const [y, m, d] = dateStr.split('-').map(Number);
-        const targetDate = new Date(y, m - 1, d);
-        startTransition(() => {
-            setCurrentDate(targetDate);
-            setSelectedDate(targetDate);
-            setActiveTab('calendar');
-            updateUrlParams(targetDate, 'calendar', targetDate, locale);
+            updateUrlParams(now, now, locale);
         });
     }, [locale, updateUrlParams]);
-
-    const handleTabChange = (tab: 'calendar' | 'holidays') => {
-        setActiveTab(tab);
-        updateUrlParams(currentDate, tab, selectedDate, locale);
-    };
 
     const handleLocaleChange = (newLocale: string | null) => {
         const value = newLocale || 'km-KH';
         startTransition(() => {
             setLocale(value);
-            updateUrlParams(currentDate, activeTab, selectedDate, value);
+            updateUrlParams(currentDate, selectedDate, value);
         });
     };
 
     const handleCloseDrawer = () => {
         setSelectedDate(null);
-        updateUrlParams(currentDate, activeTab, null, locale);
+        updateUrlParams(currentDate, null, locale);
     };
 
     // Allocate Intl formatters once per locale change (not per cell / per card).
@@ -563,33 +489,6 @@ export function LunarCalendarWidget() {
         return Array.from({ length: 7 }).map((_, i) => intlFormatters.weekdayShort.format(new Date(2000, 0, 2 + i)));
     }, [intlFormatters]);
 
-    const availableYears = useMemo(() => {
-        const base = new Date().getFullYear();
-        const years: number[] = [];
-        for (let y = base - 5; y <= base + 6; y++) {
-            years.push(y);
-        }
-        return years;
-    }, []);
-
-    const handleHolidayYearChange = (yearStr: string | null) => {
-        if (!yearStr) return;
-        const y = parseInt(yearStr, 10);
-        if (!isNaN(y)) {
-            startTransition(() => {
-                const newDate = new Date(y, currentDate.getMonth(), 1);
-                setCurrentDate(newDate);
-                updateUrlParams(newDate, activeTab, selectedDate, locale);
-            });
-        }
-    };
-
-    const handleHolidayMonthChange = (monthStr: string | null) => {
-        setHolidayMonth(monthStr || 'all');
-    };
-
-
-
     const currentMonthLunarLabel = useMemo(() => {
         try {
             return new FormatDateTime(currentDate, "ឆ្នាំlA ព.ស. BBBB", locale).formatDate();
@@ -597,25 +496,6 @@ export function LunarCalendarWidget() {
             return "Lunar Calendar";
         }
     }, [currentDate, locale]);
-
-    const filteredHolidays = useMemo(() => {
-        const query = holidaySearch.toLowerCase().trim();
-        return holidays.filter(h => {
-            const [y, m] = h.date.split('-').map(Number);
-            if (holidayMonth !== 'all' && m !== Number(holidayMonth)) {
-                return false;
-            }
-            if (query) {
-                const khmerName = KHMER_HOLIDAY_NAMES[h.name] || '';
-                return (
-                    h.name.toLowerCase().includes(query) ||
-                    khmerName.toLowerCase().includes(query) ||
-                    h.date.includes(query)
-                );
-            }
-            return true;
-        });
-    }, [holidays, holidaySearch, holidayMonth]);
 
     const selectedDateKey = selectedDate ? formatDateKey(selectedDate) : null;
     const selectedDateHoliday = selectedDateKey ? holidaysMap.get(selectedDateKey) : null;
@@ -629,53 +509,34 @@ export function LunarCalendarWidget() {
             
             <div className="bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-3xl border border-neutral-200 dark:border-white/10 rounded-2xl sm:rounded-3xl p-3 sm:p-6 md:p-8 relative overflow-hidden flex flex-col w-full shadow-xl">
                 
-                {/* Top View Selector & Month Holiday Summary */}
+                {/* Top Info Bar (Quick Public Holiday Link & API) */}
                 <div className="flex flex-wrap items-center justify-between gap-2.5 pb-4 mb-4 border-b border-neutral-200/60 dark:border-white/10 relative z-10">
-                    <div className="flex items-center gap-1.5 p-1 bg-neutral-100/80 dark:bg-white/5 rounded-xl border border-neutral-200/50 dark:border-white/5 backdrop-blur-md">
-                        <button
-                            type="button"
-                            onClick={() => handleTabChange('calendar')}
-                            className={cn(
-                                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer",
-                                activeTab === 'calendar'
-                                    ? "bg-white dark:bg-neutral-800 text-teal-600 dark:text-teal-400 shadow-xs"
-                                    : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
-                            )}
-                        >
-                            <CalendarDays className="w-4 h-4" />
-                            Calendar View
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => handleTabChange('holidays')}
-                            className={cn(
-                                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer",
-                                activeTab === 'holidays'
-                                    ? "bg-white dark:bg-neutral-800 text-teal-600 dark:text-teal-400 shadow-xs"
-                                    : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
-                            )}
-                        >
-                            <Sparkles className="w-4 h-4 text-rose-500" />
-                            Public Holidays ({holidays.length})
-                        </button>
-                    </div>
-
-                    {/* Quick Badge info */}
                     <div className="flex items-center gap-2">
                         {currentMonthHolidays.length > 0 ? (
-                            <button
-                                type="button"
-                                onClick={() => handleTabChange('holidays')}
-                                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-colors cursor-pointer"
+                            <Link
+                                href={`/holidays?year=${currentYear}&month=${currentMonth + 1}`}
+                                className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-colors"
                             >
                                 <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
-                                {currentMonthHolidays.length} Public Holiday{currentMonthHolidays.length > 1 ? 's' : ''} this month
-                            </button>
+                                {currentMonthHolidays.length} Public Holiday{currentMonthHolidays.length > 1 ? 's' : ''} in {monthNames[currentMonth]}
+                                <Sparkles className="w-3 h-3 text-rose-500 ml-0.5" />
+                            </Link>
                         ) : (
-                            <span className="text-xs text-neutral-400 font-medium hidden sm:inline-block">
+                            <span className="text-xs text-neutral-400 font-medium">
                                 No public holidays in {monthNames[currentMonth]}
                             </span>
                         )}
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        <Link
+                            href="/holidays"
+                            className="text-xs font-semibold text-teal-600 dark:text-teal-400 hover:underline flex items-center gap-1"
+                        >
+                            View All Holidays
+                            <ArrowUpRight className="w-3.5 h-3.5" />
+                        </Link>
+                        <span className="text-neutral-300 dark:text-white/10">•</span>
                         <a
                             href={`https://nagerholidays.com/api/v4/Holidays/KH/${currentYear}`}
                             target="_blank"
@@ -689,295 +550,102 @@ export function LunarCalendarWidget() {
                     </div>
                 </div>
 
-                {activeTab === 'calendar' ? (
-                    <>
-                        {/* Responsive Header Controls */}
-                        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-8 relative z-10">
-                            {/* Month / Year & Lunar Tag */}
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 sm:p-3 bg-teal-500/10 dark:bg-teal-500/20 rounded-xl sm:rounded-2xl border border-teal-500/20 shadow-inner shrink-0">
-                                    <MoonStar className="w-5 h-5 sm:w-7 sm:h-7 text-teal-600 dark:text-teal-400" />
-                                </div>
-                                <div className="min-w-0">
-                                    <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-neutral-900 dark:text-white tracking-tight truncate">
-                                        {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-                                    </h2>
-                                    <p className="text-xs sm:text-sm font-medium text-teal-600 dark:text-teal-400 mt-0.5 font-kantumruy truncate">
-                                        {currentMonthLunarLabel}
-                                    </p>
-                                </div>
-                            </div>
-                            
-                            {/* Controls Row (Language + Prev/Today/Next) */}
-                            <div className="flex items-center gap-2 sm:gap-3 w-full md:w-auto justify-between sm:justify-end">
-                                <div className="w-1/2 sm:w-37.5">
-                                    <Select value={locale} onValueChange={handleLocaleChange}>
-                                        <SelectTrigger className="w-full bg-neutral-100/80 dark:bg-white/5 border border-neutral-200/50 dark:border-white/10 text-neutral-900 dark:text-white rounded-xl backdrop-blur-md focus:ring-teal-500 focus:border-teal-500 font-medium text-xs sm:text-sm h-9 sm:h-10">
-                                            <div className="flex items-center gap-1.5 truncate">
-                                                <Globe className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
-                                                <SelectValue placeholder="Language" />
-                                            </div>
-                                        </SelectTrigger>
-                                        <SelectContent className="z-150">
-                                            <SelectItem value="km-KH">Khmer (km-KH)</SelectItem>
-                                            <SelectItem value="en-US">English (en-US)</SelectItem>
-                                            <SelectItem value="fr-FR">French (fr-FR)</SelectItem>
-                                            <SelectItem value="zh-CN">Chinese (zh-CN)</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                <div className="flex items-center gap-0.5 sm:gap-1 bg-neutral-100/80 dark:bg-white/5 p-1 rounded-xl sm:rounded-2xl border border-neutral-200/50 dark:border-white/5 backdrop-blur-md shrink-0">
-                                    <button 
-                                        type="button"
-                                        onClick={prevMonth}
-                                        aria-label="Previous Month"
-                                        className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-white hover:shadow-sm dark:hover:bg-white/10 text-neutral-600 dark:text-neutral-300 transition-all cursor-pointer"
-                                    >
-                                        <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-                                    </button>
-                                    <button 
-                                        type="button"
-                                        onClick={jumpToToday}
-                                        className="px-2.5 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-bold rounded-lg sm:rounded-xl hover:bg-white hover:shadow-sm dark:hover:bg-white/10 text-neutral-700 dark:text-neutral-200 transition-all cursor-pointer"
-                                    >
-                                        Today
-                                    </button>
-                                    <button 
-                                        type="button"
-                                        onClick={nextMonth}
-                                        aria-label="Next Month"
-                                        className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-white hover:shadow-sm dark:hover:bg-white/10 text-neutral-600 dark:text-neutral-300 transition-all cursor-pointer"
-                                    >
-                                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                                    </button>
-                                </div>
-                            </div>
+                {/* Responsive Header Controls */}
+                <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-8 relative z-10">
+                    {/* Month / Year & Lunar Tag */}
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 sm:p-3 bg-teal-500/10 dark:bg-teal-500/20 rounded-xl sm:rounded-2xl border border-teal-500/20 shadow-inner shrink-0">
+                            <MoonStar className="w-5 h-5 sm:w-7 sm:h-7 text-teal-600 dark:text-teal-400" />
                         </div>
-
-                        {/* Calendar Grid Container */}
-                        <div className="w-full relative z-10">
-                            {/* Weekdays Row */}
-                            <div className="grid grid-cols-7 mb-2 sm:mb-4">
-                                {weekDays.map((day, idx) => (
-                                    <div 
-                                        key={day} 
-                                        className={cn(
-                                            "text-center text-[10px] sm:text-xs font-bold uppercase tracking-wider py-1 truncate",
-                                            idx === 0 
-                                                ? "text-rose-600 dark:text-rose-400 font-extrabold" 
-                                                : idx === 6
-                                                    ? "text-amber-500 dark:text-amber-400 font-extrabold"
-                                                    : "text-neutral-400 dark:text-neutral-500"
-                                        )}
-                                    >
-                                        {day}
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Day Cells Grid or Loading Skeleton */}
-                            {isPending ? (
-                                <CalendarGridSkeleton />
-                            ) : (
-                                <div className="grid grid-cols-7 gap-1 sm:gap-1.5 md:gap-2 animate-in fade-in duration-150">
-                                    {calendarData.map(cell => (
-                                        <DayCell key={cell.dateKey} cell={cell} onSelect={handleSelectDate} />
-                                    ))}
-                                </div>
-                            )}
+                        <div className="min-w-0">
+                            <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-neutral-900 dark:text-white tracking-tight truncate">
+                                {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+                            </h2>
+                            <p className="text-xs sm:text-sm font-medium text-teal-600 dark:text-teal-400 mt-0.5 font-kantumruy truncate">
+                                {currentMonthLunarLabel}
+                            </p>
                         </div>
-                    </>
-                ) : (
-                    /* Public Holidays Comparison View */
-                    <div className="w-full relative z-10 space-y-4">
-                        {/* Search & Filter Bar */}
-                        <div className="flex flex-col gap-3 p-3 sm:p-4 rounded-2xl bg-neutral-100/60 dark:bg-white/5 border border-neutral-200/60 dark:border-white/10">
-                            <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center">
-                                {/* Search input */}
-                                <div className="relative sm:col-span-6 md:col-span-6">
-                                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-                                    <input
-                                        type="text"
-                                        value={holidaySearch}
-                                        onChange={(e) => setHolidaySearch(e.target.value)}
-                                        placeholder="Search holiday by name, Khmer name, or date..."
-                                        className="w-full pl-9 pr-8 py-2 text-xs sm:text-sm rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                                    />
-                                    {holidaySearch && (
-                                        <button
-                                            type="button"
-                                            onClick={() => setHolidaySearch('')}
-                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 cursor-pointer"
-                                            aria-label="Clear search"
-                                        >
-                                            <X className="w-3.5 h-3.5" />
-                                        </button>
-                                    )}
-                                </div>
-
-                                {/* Year Selector */}
-                                <div className="sm:col-span-3 md:col-span-3">
-                                    <Select value={String(currentYear)} onValueChange={handleHolidayYearChange}>
-                                        <SelectTrigger className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 text-neutral-900 dark:text-white rounded-xl focus:ring-teal-500 font-medium text-xs sm:text-sm h-9 sm:h-10">
-                                            <div className="flex items-center gap-1.5 truncate">
-                                                <CalendarIcon className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-                                                <SelectValue placeholder="Year" />
-                                            </div>
-                                        </SelectTrigger>
-                                        <SelectContent className="z-150 max-h-60">
-                                            {availableYears.map((yr) => (
-                                                <SelectItem key={yr} value={String(yr)}>
-                                                    {yr}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                {/* Month Selector */}
-                                <div className="sm:col-span-3 md:col-span-3">
-                                    <Select value={holidayMonth} onValueChange={handleHolidayMonthChange}>
-                                        <SelectTrigger className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 text-neutral-900 dark:text-white rounded-xl focus:ring-teal-500 font-medium text-xs sm:text-sm h-9 sm:h-10">
-                                            <div className="flex items-center gap-1.5 truncate">
-                                                <CalendarDays className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-                                                <SelectValue placeholder="Month" />
-                                            </div>
-                                        </SelectTrigger>
-                                        <SelectContent className="z-150 max-h-60">
-                                            <SelectItem value="all">All Months</SelectItem>
-                                            {monthNames.map((name, idx) => (
-                                                <SelectItem key={idx + 1} value={String(idx + 1)}>
-                                                    {name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-
-                            {/* Filter status row & quick actions */}
-                            <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-neutral-200/50 dark:border-white/5 text-xs">
-                                <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
-                                    <ListFilter className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400 shrink-0" />
-                                    <span className="font-medium">
-                                        Showing <strong className="text-neutral-900 dark:text-white">{filteredHolidays.length}</strong> of {holidays.length} holidays
-                                        {holidayMonth !== 'all' && (
-                                            <> in <span className="text-teal-600 dark:text-teal-400 font-semibold">{monthNames[Number(holidayMonth) - 1]}</span></>
-                                        )}
-                                        {' '}({currentYear})
-                                    </span>
-                                </div>
-
-                                {(holidayMonth !== 'all' || holidaySearch) && (
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setHolidayMonth('all');
-                                            setHolidaySearch('');
-                                        }}
-                                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 transition-colors cursor-pointer"
-                                    >
-                                        <X className="w-3 h-3" />
-                                        Reset Filters
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Comparison Grid Cards or Loading Skeleton / Empty State */}
-                        {isLoadingHolidays || isPending ? (
-                            <PublicHolidaysSkeleton />
-                        ) : filteredHolidays.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-12 px-4 text-center rounded-2xl bg-neutral-50/50 dark:bg-white/2 border border-dashed border-neutral-200 dark:border-white/10 animate-in fade-in duration-150">
-                                <div className="p-3 rounded-2xl bg-neutral-100 dark:bg-white/5 text-neutral-400 mb-3">
-                                    <CalendarDays className="w-6 h-6" />
-                                </div>
-                                <p className="text-sm font-bold text-neutral-900 dark:text-white">
-                                    No public holidays found
-                                </p>
-                                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 max-w-sm">
-                                    {holidayMonth !== 'all' || holidaySearch
-                                        ? "No holidays match your current filter criteria. Try selecting another month or clearing search."
-                                        : `There are no recorded public holidays for ${currentYear}.`}
-                                </p>
-                                {(holidayMonth !== 'all' || holidaySearch) && (
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setHolidayMonth('all');
-                                            setHolidaySearch('');
-                                        }}
-                                        className="mt-4 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors cursor-pointer"
-                                    >
-                                        Clear all filters
-                                    </button>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pr-1 animate-in fade-in duration-150">
-                                {filteredHolidays.map((h) => {
-                                    const [y, m, d] = h.date.split('-').map(Number);
-                                    const hDate = new Date(y, m - 1, d);
-                                    const khmerName = KHMER_HOLIDAY_NAMES[h.name] || 'បុណ្យជាតិ';
-                                    
-                                    let lunarString = '';
-                                    try {
-                                        const fdt = new FormatDateTime(hDate, "ថ្ងៃlW ទីldlN ខែlM ឆ្នាំlA ព.ស. BBBB", locale);
-                                        lunarString = fdt.formatDate();
-                                    } catch {
-                                        lunarString = 'គណនាប្រតិទិនចន្ទគតិ';
-                                    }
-
-                                    return (
-                                        <div
-                                            key={h.date + h.name}
-                                            className="p-3.5 sm:p-4 rounded-2xl bg-white/50 dark:bg-white/5 border border-neutral-200/70 dark:border-white/10 hover:border-rose-500/40 hover:bg-rose-500/5 transition-all flex flex-col justify-between gap-3 group/card"
-                                        >
-                                            <div className="flex items-start justify-between gap-2">
-                                                <div>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20">
-                                                            {h.date}
-                                                        </span>
-                                                        <span className="text-[10px] uppercase font-bold text-neutral-400">
-                                                            {intlFormatters.weekdayShort.format(hDate)}
-                                                        </span>
-                                                    </div>
-                                                    <h3 className="text-sm sm:text-base font-bold text-neutral-900 dark:text-white mt-1.5">
-                                                        {h.name}
-                                                    </h3>
-                                                    <p className="text-xs font-medium text-rose-600 dark:text-rose-400 mt-0.5 font-kantumruy">
-                                                        {khmerName}
-                                                    </p>
-                                                </div>
-                                                
-                                                <button
-                                                    type="button"
-                                                    onClick={() => jumpToDate(h.date)}
-                                                    className="p-2 rounded-xl bg-neutral-100 dark:bg-white/5 group-hover/card:bg-rose-500 group-hover/card:text-white text-neutral-500 transition-all cursor-pointer shrink-0"
-                                                    title="Jump to date in calendar"
-                                                >
-                                                    <CalendarIcon className="w-4 h-4" />
-                                                </button>
-                                            </div>
-
-                                            {/* Lunar Date Alignment Details */}
-                                            <div className="pt-2 border-t border-neutral-100 dark:border-white/5 flex items-center justify-between text-xs text-neutral-600 dark:text-neutral-400">
-                                                <div className="flex items-center gap-1.5 truncate">
-                                                    <MoonStar className="w-3.5 h-3.5 text-teal-500 shrink-0" />
-                                                    <span className="font-kantumruy truncate">
-                                                        {lunarString}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        )}
                     </div>
-                )}
+                    
+                    {/* Controls Row (Language + Prev/Today/Next) */}
+                    <div className="flex items-center gap-2 sm:gap-3 w-full md:w-auto justify-between sm:justify-end">
+                        <div className="w-1/2 sm:w-37.5">
+                            <Select value={locale} onValueChange={handleLocaleChange}>
+                                <SelectTrigger className="w-full bg-neutral-100/80 dark:bg-white/5 border border-neutral-200/50 dark:border-white/10 text-neutral-900 dark:text-white rounded-xl backdrop-blur-md focus:ring-teal-500 focus:border-teal-500 font-medium text-xs sm:text-sm h-9 sm:h-10">
+                                    <div className="flex items-center gap-1.5 truncate">
+                                        <Globe className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                                        <SelectValue placeholder="Language" />
+                                    </div>
+                                </SelectTrigger>
+                                <SelectContent className="z-150">
+                                    <SelectItem value="km-KH">Khmer (km-KH)</SelectItem>
+                                    <SelectItem value="en-US">English (en-US)</SelectItem>
+                                    <SelectItem value="fr-FR">French (fr-FR)</SelectItem>
+                                    <SelectItem value="zh-CN">Chinese (zh-CN)</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="flex items-center gap-0.5 sm:gap-1 bg-neutral-100/80 dark:bg-white/5 p-1 rounded-xl sm:rounded-2xl border border-neutral-200/50 dark:border-white/5 backdrop-blur-md shrink-0">
+                            <button 
+                                type="button"
+                                onClick={prevMonth}
+                                aria-label="Previous Month"
+                                className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-white hover:shadow-sm dark:hover:bg-white/10 text-neutral-600 dark:text-neutral-300 transition-all cursor-pointer"
+                            >
+                                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                            </button>
+                            <button 
+                                type="button"
+                                onClick={jumpToToday}
+                                className="px-2.5 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-bold rounded-lg sm:rounded-xl hover:bg-white hover:shadow-sm dark:hover:bg-white/10 text-neutral-700 dark:text-neutral-200 transition-all cursor-pointer"
+                            >
+                                Today
+                            </button>
+                            <button 
+                                type="button"
+                                onClick={nextMonth}
+                                aria-label="Next Month"
+                                className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-white hover:shadow-sm dark:hover:bg-white/10 text-neutral-600 dark:text-neutral-300 transition-all cursor-pointer"
+                            >
+                                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Calendar Grid Container */}
+                <div className="w-full relative z-10">
+                    {/* Weekdays Row */}
+                    <div className="grid grid-cols-7 mb-2 sm:mb-4">
+                        {weekDays.map((day, idx) => (
+                            <div 
+                                key={day} 
+                                className={cn(
+                                    "text-center text-[10px] sm:text-xs font-bold uppercase tracking-wider py-1 truncate",
+                                    idx === 0 
+                                        ? "text-rose-600 dark:text-rose-400 font-extrabold" 
+                                        : idx === 6
+                                            ? "text-amber-500 dark:text-amber-400 font-extrabold"
+                                            : "text-neutral-400 dark:text-neutral-500"
+                                )}
+                            >
+                                {day}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Day Cells Grid or Loading Skeleton */}
+                    {isPending ? (
+                        <CalendarGridSkeleton />
+                    ) : (
+                        <div className="grid grid-cols-7 gap-1 sm:gap-1.5 md:gap-2 animate-in fade-in duration-150">
+                            {calendarData.map(cell => (
+                                <DayCell key={cell.dateKey} cell={cell} onSelect={handleSelectDate} />
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
 
             <DateDetailPopup

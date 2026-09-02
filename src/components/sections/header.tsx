@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
-import { Clock, MoonStar, Home, Menu, X, HelpCircle, BookOpen, Sliders, Calendar, ExternalLink } from "lucide-react";
+import { Clock, MoonStar, Home, Menu, X, HelpCircle, BookOpen, Sliders, Calendar, ExternalLink, Sparkles } from "lucide-react";
 import Link from "next/link";
 import pkg from '../../../package.json';
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -10,6 +10,7 @@ import { usePathname } from "next/navigation";
 export default function Header() {
     const pathname = usePathname();
     const isCalendar = pathname === "/calendar";
+    const isHolidays = pathname === "/holidays";
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     // Auto-close mobile menu on route change or resize to desktop
@@ -28,8 +29,9 @@ export default function Header() {
     }, []);
 
     const navLinks = [
-        { href: "/", label: "Home", icon: Home, active: !isCalendar },
+        { href: "/", label: "Home", icon: Home, active: pathname === "/" },
         { href: "/calendar", label: "Calendar", icon: Calendar, active: isCalendar },
+        { href: "/holidays", label: "Holidays", icon: Sparkles, active: isHolidays },
         { href: "/#playground", label: "Playground", icon: Sliders, isAnchor: true },
         { href: "/#faq", label: "FAQ", icon: HelpCircle, isAnchor: true },
         { href: "/llms.txt", label: "LLMs Context", icon: BookOpen, isExternal: true },
