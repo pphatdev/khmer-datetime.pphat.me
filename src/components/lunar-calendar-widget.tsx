@@ -171,6 +171,59 @@ const DayCell = memo(function DayCell({ cell, onSelect }: DayCellProps) {
     );
 });
 
+// ─── Loading Skeletons ───────────────────────────────────────────────────────
+
+function CalendarGridSkeleton() {
+    return (
+        <div className="grid grid-cols-7 gap-1 sm:gap-1.5 md:gap-2 animate-pulse">
+            {Array.from({ length: 35 }).map((_, i) => (
+                <div
+                    key={i}
+                    className="min-h-16 sm:min-h-20 md:min-h-24 p-1 sm:p-2 rounded-xl sm:rounded-2xl border border-neutral-200/50 dark:border-white/5 bg-neutral-100/60 dark:bg-white/5 flex flex-col justify-between"
+                >
+                    <div className="flex items-center justify-between">
+                        <div className="w-5 h-5 rounded-full bg-neutral-200/80 dark:bg-white/10" />
+                        <div className="w-3.5 h-3.5 rounded-full bg-neutral-200/50 dark:bg-white/5" />
+                    </div>
+                    <div className="flex flex-col items-center gap-1.5 my-auto">
+                        <div className="w-10 sm:w-14 h-3 rounded-md bg-neutral-200/80 dark:bg-white/10" />
+                        <div className="w-6 sm:w-8 h-2 rounded bg-neutral-200/50 dark:bg-white/5" />
+                    </div>
+                    <div className="h-1.5 sm:h-2" />
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function PublicHolidaysSkeleton() {
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pr-1 animate-pulse">
+            {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                    key={i}
+                    className="p-3.5 sm:p-4 rounded-2xl bg-neutral-100/60 dark:bg-white/5 border border-neutral-200/50 dark:border-white/5 flex flex-col justify-between gap-3 min-h-32"
+                >
+                    <div className="flex items-start justify-between gap-2">
+                        <div className="space-y-2 flex-1">
+                            <div className="flex items-center gap-2">
+                                <div className="w-20 h-5 rounded-full bg-neutral-200/80 dark:bg-white/10" />
+                                <div className="w-10 h-3 rounded bg-neutral-200/50 dark:bg-white/5" />
+                            </div>
+                            <div className="w-3/4 h-5 rounded-md bg-neutral-200/80 dark:bg-white/10" />
+                            <div className="w-1/2 h-3.5 rounded-md bg-neutral-200/50 dark:bg-white/5" />
+                        </div>
+                        <div className="w-8 h-8 rounded-xl bg-neutral-200/80 dark:bg-white/10 shrink-0" />
+                    </div>
+                    <div className="pt-2 border-t border-neutral-200/40 dark:border-white/5 flex items-center justify-between">
+                        <div className="w-28 h-3.5 rounded bg-neutral-200/50 dark:bg-white/5" />
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+}
+
 // ─── Main widget ─────────────────────────────────────────────────────────────
 
 export function LunarCalendarWidget() {
@@ -221,6 +274,7 @@ export function LunarCalendarWidget() {
         return null;
     });
     const [holidays, setHolidays] = useState<PublicHoliday[]>([]);
+    const [isLoadingHolidays, setIsLoadingHolidays] = useState(false);
     const [activeTab, setActiveTab] = useState<'calendar' | 'holidays'>(() => {
         return searchParams.get('tab') === 'holidays' ? 'holidays' : 'calendar';
     });
@@ -235,9 +289,10 @@ export function LunarCalendarWidget() {
         setMounted(true);
     }, []);
 
-    // Sync URL search params helper
+    // Fast non-blocking URL search params helper
     const updateUrlParams = useCallback((targetDate: Date, tabName?: string, selDate?: Date | null, loc?: string) => {
-        const params = new URLSearchParams(searchParams.toString());
+        const currentSearch = typeof window !== 'undefined' ? window.location.search : searchParams.toString();
+        const params = new URLSearchParams(currentSearch);
         params.set('year', String(targetDate.getFullYear()));
         params.set('month', String(targetDate.getMonth() + 1)); // 1-indexed
 
@@ -260,7 +315,12 @@ export function LunarCalendarWidget() {
         }
 
         const queryString = params.toString();
-        router.replace(`${pathname}${queryString ? `?${queryString}` : ''}`, { scroll: false });
+        const targetUrl = `${pathname}${queryString ? `?${queryString}` : ''}`;
+        try {
+            window.history.replaceState(null, '', targetUrl);
+        } catch {
+            router.replace(targetUrl, { scroll: false });
+        }
     }, [pathname, router, searchParams]);
 
     // Handle browser back/forward or external URL changes
@@ -309,13 +369,19 @@ export function LunarCalendarWidget() {
     // Fetch public holidays dynamically for the current year
     useEffect(() => {
         let isMounted = true;
+        setIsLoadingHolidays(true);
         fetchCambodiaHolidays(currentYear)
             .then(data => {
                 if (isMounted) {
                     setHolidays(data);
+                    setIsLoadingHolidays(false);
                 }
             })
-            .catch(() => {});
+            .catch(() => {
+                if (isMounted) {
+                    setIsLoadingHolidays(false);
+                }
+            });
 
         return () => {
             isMounted = false;
@@ -710,12 +776,16 @@ export function LunarCalendarWidget() {
                                 ))}
                             </div>
 
-                            {/* Day Cells Grid */}
-                            <div className={cn("grid grid-cols-7 gap-1 sm:gap-1.5 md:gap-2", isPending && "opacity-50 transition-opacity duration-200")}>
-                                {calendarData.map(cell => (
-                                    <DayCell key={cell.dateKey} cell={cell} onSelect={handleSelectDate} />
-                                ))}
-                            </div>
+                            {/* Day Cells Grid or Loading Skeleton */}
+                            {isPending ? (
+                                <CalendarGridSkeleton />
+                            ) : (
+                                <div className="grid grid-cols-7 gap-1 sm:gap-1.5 md:gap-2 animate-in fade-in duration-150">
+                                    {calendarData.map(cell => (
+                                        <DayCell key={cell.dateKey} cell={cell} onSelect={handleSelectDate} />
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </>
                 ) : (
@@ -815,9 +885,11 @@ export function LunarCalendarWidget() {
                             </div>
                         </div>
 
-                        {/* Comparison Grid Cards or Empty State */}
-                        {filteredHolidays.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-12 px-4 text-center rounded-2xl bg-neutral-50/50 dark:bg-white/[0.02] border border-dashed border-neutral-200 dark:border-white/10">
+                        {/* Comparison Grid Cards or Loading Skeleton / Empty State */}
+                        {isLoadingHolidays || isPending ? (
+                            <PublicHolidaysSkeleton />
+                        ) : filteredHolidays.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-12 px-4 text-center rounded-2xl bg-neutral-50/50 dark:bg-white/2 border border-dashed border-neutral-200 dark:border-white/10 animate-in fade-in duration-150">
                                 <div className="p-3 rounded-2xl bg-neutral-100 dark:bg-white/5 text-neutral-400 mb-3">
                                     <CalendarDays className="w-6 h-6" />
                                 </div>
@@ -843,7 +915,7 @@ export function LunarCalendarWidget() {
                                 )}
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pr-1">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pr-1 animate-in fade-in duration-150">
                                 {filteredHolidays.map((h) => {
                                     const [y, m, d] = h.date.split('-').map(Number);
                                     const hDate = new Date(y, m - 1, d);
