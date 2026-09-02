@@ -31,7 +31,7 @@ export default function CalendarPage() {
                             Khmer Lunar Calendar
                         </h1>
                         <p className="text-xs sm:text-sm md:text-base text-neutral-500 dark:text-neutral-400 max-w-2xl mx-auto leading-relaxed">
-                            Interactive astronomical calendar synchronized with the traditional Khmer lunar cycle and Buddhist Era.
+                            Interactive astronomical calendar synchronized with the traditional Khmer lunar cycle, Buddhist Era, and official Cambodian public holidays.
                         </p>
                     </div>
                     <LunarCalendarWidget />
