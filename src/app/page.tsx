@@ -7,6 +7,7 @@ import { HeroSection } from "@/components/sections/hero-section";
 import { ShowcaseSection } from "@/components/sections/showcase-section";
 import { QuickStartSection } from "@/components/sections/quick-start-section";
 import { PlaygroundSection } from "@/components/sections/playground-section";
+import { FaqSection } from "@/components/sections/faq-section";
 
 import Header from "@/components/sections/header";
 
@@ -51,6 +52,7 @@ export default function Home() {
                 <ShowcaseSection mounted={mounted} now={now} />
                 <QuickStartSection />
                 <PlaygroundSection mounted={mounted} now={now} />
+                <FaqSection />
             </main>
 
             <Footer />

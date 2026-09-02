@@ -28,7 +28,13 @@ export const metadata: Metadata = {
         "typescript date format", 
         "pphatdev", 
         "format-datetime", 
-        "cambodia datetime"
+        "cambodia datetime",
+        "soriyatra calendar",
+        "khmer astronomical calculations",
+        "buddhist era converter",
+        "moha songkran calculation",
+        "khmer leap year adhika meas",
+        "llms.txt khmer datetime"
     ],
     authors: [{ name: "PPhat", url: "https://pphat.me" }],
     creator: "PPhat",

@@ -25,9 +25,14 @@ export default function Header() {
                         Home
                     </Link>
                 ) : (
-                    <Link href="/calendar" className="text-sm font-bold text-neutral-600 dark:text-neutral-300 hover:text-teal-600 dark:hover:text-teal-400 flex items-center gap-2">
-                        Calendar
-                    </Link>
+                    <>
+                        <Link href="/calendar" className="text-sm font-bold text-neutral-600 dark:text-neutral-300 hover:text-teal-600 dark:hover:text-teal-400 flex items-center gap-2">
+                            Calendar
+                        </Link>
+                        <a href="/#faq" className="text-sm font-bold text-neutral-600 dark:text-neutral-300 hover:text-teal-600 dark:hover:text-teal-400 flex items-center gap-2 max-sm:hidden">
+                            FAQ
+                        </a>
+                    </>
                 )}
                 <ThemeToggle />
                 <a href="https://github.com/pphatdev/format-datetime" target="_blank" rel="noreferrer" className="text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors flex items-center gap-2 text-sm font-medium">
