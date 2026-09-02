@@ -1,0 +1,228 @@
+# @pphatdev/format-datetime
+
+> A zero-dependency TypeScript library for formatting dates and times into localized strings using native JavaScript APIs (`Intl.DateTimeFormat`, `Date`). Features first-class Khmer (`km-KH`) localization with native Khmer numerals, six time-of-day phrases, and full Khmer lunar calendar arithmetic — Buddhist Era (BE), Jolak Sakaraj (JS), 12-animal cycle, 10-era Sak cycle, waxing/waning moon phases, and precise Khmer New Year (Moha Songkran) calculations.
+
+- **NPM Package**: `@pphatdev/format-datetime`
+- **JSR Package**: `jsr:@pphatdev/format-datetime`
+- **Repository**: https://github.com/pphatdev/khmer-datetime
+- **Demo & Documentation**: https://format-datetime.pphat.me
+- **Full LLM Context**: [llms-full.txt](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/llms-full.txt)
+
+---
+
+## Quick Start
+
+### Installation
+
+```bash
+# Node.js / Bun / Cloudflare Workers
+npm install @pphatdev/format-datetime
+
+# Deno (via JSR)
+deno add @pphatdev/format-datetime
+```
+
+### Basic Solar Formatting
+
+```typescript
+import { FormatDateTime } from '@pphatdev/format-datetime';
+
+// Format with standard tokens
+const dt = new FormatDateTime(new Date(), 'YYYY-MM-DD hh:mm:ss A', 'km-KH');
+console.log(dt.formatDate()); 
+// Output: "២០២៦-០៩-០២ ០១:២៦:៥៩ រសៀល"
+
+// English locale
+const dtEn = new FormatDateTime(new Date(), 'dddd, MMMM DD, YYYY', 'en-US');
+console.log(dtEn.formatDate()); 
+// Output: "Wednesday, September 02, 2026"
+```
+
+### Khmer Lunar Formatting
+
+```typescript
+import { KhmerDate, FormatDateTime } from '@pphatdev/format-datetime';
+
+// 1. Using KhmerDate preset
+const khDate = new KhmerDate(new Date('2026-04-14'));
+console.log(khDate.toLunarDate('full'));
+// Output: "ថ្ងៃអង្គារ ១២រោច ខែចេត្រ ឆ្នាំរោង ឆស័ក ពុទ្ធសករាជ ២៥៦៩"
+
+// 2. Using inline lunar tokens in FormatDateTime
+const dt = new FormatDateTime(new Date(), 'ថ្ងៃlK lDlN ខែlM ឆ្នាំlA lS ព.ស. BBBB', 'km-KH');
+console.log(dt.formatDate());
+// Output: "ថ្ងៃពុធ ៥កើត ខែពិសាខ ឆ្នាំរោង ឆស័ក ព.ស. ២៥៧០"
+```
+
+---
+
+## Token Reference
+
+Formatting operates via a single-pass, **longest-token-first** regex to avoid substring collisions.
+
+### Solar Tokens
+| Token | Description | Example (`en-US`) | Example (`km-KH`) |
+| :--- | :--- | :--- | :--- |
+| `YYYY` | 4-digit Gregorian Year | `2026` | `២០២៦` |
+| `YY` | 2-digit Gregorian Year | `26` | `២៦` |
+| `MMMM` | Full Month Name | `September` | `កញ្ញា` |
+| `MMM` | Short Month Name | `Sep` | `កញ្ញា` |
+| `MM` | 2-digit Month Number | `09` | `០៩` |
+| `M` | 1-digit Month Number | `9` | `៩` |
+| `DD` | 2-digit Day of Month | `02` | `០២` |
+| `D` | 1-digit Day of Month | `2` | `២` |
+| `dddd` | Full Weekday Name | `Wednesday` | `ពុធ` |
+| `ddd` | Short Weekday Name | `Wed` | `ពុធ` |
+| `HH` | 2-digit 24-hour (`00-23`) | `13` | `១៣` |
+| `H` | 1-digit 24-hour (`0-23`) | `13` | `១៣` |
+| `hh` | 2-digit 12-hour (`01-12`) | `01` | `០១` |
+| `h` | 1-digit 12-hour (`1-12`) | `1` | `១` |
+| `mm` | 2-digit Minute (`00-59`) | `26` | `២៦` |
+| `m` | 1-digit Minute (`0-59`) | `26` | `២៦` |
+| `ss` | 2-digit Second (`00-59`) | `59` | `៥៩` |
+| `s` | 1-digit Second (`0-59`) | `59` | `៥៩` |
+| `A` | Uppercase Period / Khmer Phrase | `PM` | `រសៀល` |
+| `a` | Lowercase Period / Khmer Phrase | `pm` | `រសៀល` |
+| `Z` | Timezone Offset (`+07:00`) | `+07:00` | `+07:00` |
+| `ZZ` | Compact Timezone (`+0700`) | `+0700` | `+0700` |
+
+### Khmer Lunar Tokens
+| Token | Description | Example Output | Meaning / Notes |
+| :--- | :--- | :--- | :--- |
+| `BBBB` | Buddhist Era (BE) Year | `២៥៧០` | Calculated with Visakha Bochea cutoff |
+| `BBB` | Buddhist Era (Arabic digits) | `2570` | Numeric BE representation |
+| `lM` | Lunar Month Name | `ពិសាខ`, `បឋមាសាឍ` | Includes leap months (`បឋមាសាឍ`/`ទុតិយាសាឍ`) |
+| `lMM` | Short Lunar Month | `ពិសាខ` | Traditional lunar month |
+| `lD` | Lunar Day Count | `៥`, `១៥` | Day number in half-month (`១` to `១៥`) |
+| `lDD` | 2-digit Lunar Day Count | `០៥`, `១៥` | Zero-padded lunar day |
+| `lN` | Moon Status (Waxing/Waning) | `កើត` (Waxing) / `រោច` (Waning) | Full status word |
+| `lW` | Short Moon Status | `ក.` / `រ.` | Abbreviated status |
+| `lA` | 12-Animal Cycle Year | `រោង`, `ម្សាញ់`, `មមី` | Animal sign (`ជូត` to `កុរ`) |
+| `lS` | 10-Era Sak Cycle | `ឆស័ក`, `សំរឹទ្ធិស័ក` | Sak era (`ឯកស័ក` to `សំរឹទ្ធិស័ក`) |
+| `lK` | Khmer Weekday with Prefix | `ថ្ងៃពុធ`, `ថ្ងៃអាទិត្យ` | Precludes manual day labeling |
+| `lJ` | Jolak Sakaraj Era Year | `១៣៨៨` | Minor era (Moha Songkran cutoff) |
+
+### Khmer Time-of-Day Phrase Mapping (`A` / `a` tokens in `km-KH`)
+* **00:00 – 04:59**: `អាធ្រាត្រ` (Midnight / Late Night)
+* **05:00 – 11:59**: `ព្រឹក` (Morning)
+* **12:00 – 12:59**: `ថ្ងៃត្រង់` (Noon)
+* **13:00 – 16:59**: `រសៀល` (Afternoon)
+* **17:00 – 19:59**: `ល្ងាច` (Evening)
+* **20:00 – 23:59**: `យប់` (Night)
+
+---
+
+## Core API Reference
+
+### 1. `FormatDateTime` Class
+```typescript
+class FormatDateTime {
+  constructor(
+    date?: Date | string | number | null, 
+    format?: string, 
+    locale?: string // Default: 'en-US'. 'km' prefix activates Khmer mode
+  );
+
+  formatDate(): string;
+  formatLunarDate(preset?: 'full' | 'medium' | 'short'): string;
+  toString(): string;
+  toDate(): Date;
+
+  static format(date?: Date | string | number | null, format?: string, locale?: string): string;
+  static formatLunar(date?: Date | string | number | null, preset?: 'full' | 'medium' | 'short'): string;
+  static tokens(): string[];
+}
+```
+
+### 2. `KhmerDate` Class
+```typescript
+class KhmerDate {
+  constructor(date?: Date | string | number | null);
+
+  toLunarDate(preset?: 'full' | 'medium' | 'short'): string;
+  toKhmerDate(patternWithBraces: string): string; // e.g. "ថ្ងៃ{DAY} {DD}{STATUS} ខែ{MONTH}"
+  khDay(): number;
+  khMonth(): number;
+  khYear(): number;
+  getTimestamp(): number;
+  copy(): KhmerDate;
+
+  static findLunarDate(date: Date): KhmerLunarInfo;
+  static getKhNewYearMoment(gregorianYear: number): Date;
+  static arabicToKhmerNumber(value: number | string): string;
+  static khmerToArabicNumber(value: string): number;
+}
+```
+
+### 3. Presets for `formatLunarDate()` / `toLunarDate()`
+* **`full`**: `ថ្ងៃ{DAY} {DD}{STATUS} ខែ{MONTH} ឆ្នាំ{ANIMAL} {SAK} ពុទ្ធសករាជ {BE}`
+* **`medium`**: `{DD}{STATUS} ខែ{MONTH} ព.ស. {BE}`
+* **`short`**: `{DD}{STATUS} ខែ{MONTH}`
+
+---
+
+## Common Recipes
+
+### React Hook with Auto-Refresh
+```typescript
+import { useState, useEffect } from 'react';
+import { FormatDateTime } from '@pphatdev/format-datetime';
+
+export function useKhmerDateTime(pattern = 'ថ្ងៃdddd ទីDD ខែMMMM ឆ្នាំYYYY ម៉ោង hh:mm:ss A') {
+  const [formatted, setFormatted] = useState('');
+
+  useEffect(() => {
+    const update = () => setFormatted(new FormatDateTime(new Date(), pattern, 'km-KH').formatDate());
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, [pattern]);
+
+  return formatted;
+}
+```
+
+### Cloudflare Worker JSON Response
+```typescript
+import { FormatDateTime, KhmerDate } from '@pphatdev/format-datetime';
+
+export default {
+  async fetch(request: Request): Promise<Response> {
+    const now = new Date();
+    const solar = new FormatDateTime(now, 'YYYY-MM-DD HH:mm:ss', 'km-KH').formatDate();
+    const lunar = new KhmerDate(now).toLunarDate('full');
+
+    return new Response(JSON.stringify({ solar, lunar }), {
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    });
+  },
+};
+```
+
+---
+
+## Detailed Documentation Links
+
+- [Getting Started](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/docs/getting-started.md): Installation on Node, Bun, Deno, Workers, CDN, framework guides.
+- [Token Reference](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/docs/tokens.md): Exhaustive solar and lunar token catalog with examples.
+- [API Reference](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/docs/api-reference.md): TypeScript signatures, methods, static factories.
+- [TypeScript Guide](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/docs/typescript.md): Strict mode setups, ambient global declarations, interfaces.
+- [Lunar Calendar](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/docs/lunar-calendar.md): Historical Soriyatra context, cutoff rules, leap types (Adhikamas & Chantreathimeas).
+- [Algorithms](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/docs/algorithms.md): Aharkun, Avoman, Bodithey, Kromthupul, and UTC-noon solver normalization.
+- [Architecture](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/docs/architecture.md): Subsystems, token-matching regex design, memory caching.
+- [Runtimes](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/docs/runtimes.md): Multi-target builds, zero-dependency guarantees.
+- [Examples](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/docs/examples.md): Practical recipes for web, server, and full-stack frameworks.
+- [FAQ](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/docs/faq.md): Troubleshooting common date gotchas and performance optimizations.
+
+---
+
+## Source Code References
+
+- [src/index.ts](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/src/index.ts): Main `FormatDateTime` entry point and global exports.
+- [src/config/tokens.ts](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/src/config/tokens.ts): Token replacement engine and phrase maps.
+- [src/config/constants.ts](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/src/config/constants.ts): Lookups for months, animals, eras, and numerals.
+- [src/lunar/khmer-date.ts](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/src/lunar/khmer-date.ts): `KhmerDate` class and lunar solver facade.
+- [src/lunar/calculator.ts](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/src/lunar/calculator.ts): Soriyatra astronomical math implementation.
+- [src/lunar/khmer-formatter.ts](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/src/lunar/khmer-formatter.ts): String interpolation for preset lunar templates.
+- [src/lunar/soriyatra-lerng-sak.ts](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/src/lunar/soriyatra-lerng-sak.ts): Astronomical calculations for Moha Songkran and Sotins.
+- [src/utils/utils.ts](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/src/utils/utils.ts): Supplementary utilities for holidays, seasons, and differences.
