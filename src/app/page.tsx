@@ -40,9 +40,9 @@ export default function Home() {
                 </svg>
 
                 {/* Main Ambient Lights */}
-                <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] opacity-20 dark:opacity-30 blur-[120px] bg-linear-to-r from-sky-500 via-teal-500 to-green-500 rounded-full mix-blend-multiply dark:mix-blend-screen" />
-                <div className="absolute top-[30%] left-[-10%] w-[600px] h-[600px] opacity-10 dark:opacity-20 blur-[150px] bg-teal-500 rounded-full mix-blend-multiply dark:mix-blend-screen" />
-                <div className="absolute top-[60%] right-[-10%] w-[600px] h-[600px] opacity-10 dark:opacity-20 blur-[150px] bg-sky-500 rounded-full mix-blend-multiply dark:mix-blend-screen" />
+                <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-250 h-125 opacity-20 dark:opacity-30 blur-[120px] bg-linear-to-r from-sky-500 via-teal-500 to-green-500 rounded-full mix-blend-multiply dark:mix-blend-screen" />
+                <div className="absolute top-[30%] left-[-10%] w-150 h-150 opacity-10 dark:opacity-20 blur-[150px] bg-teal-500 rounded-full mix-blend-multiply dark:mix-blend-screen" />
+                <div className="absolute top-[60%] right-[-10%] w-150 h-150 opacity-10 dark:opacity-20 blur-[150px] bg-sky-500 rounded-full mix-blend-multiply dark:mix-blend-screen" />
             </div>
 
             <Header />

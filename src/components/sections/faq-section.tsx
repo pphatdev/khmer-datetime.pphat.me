@@ -140,7 +140,7 @@ function HighlightedCode({ code }: { code: string }) {
     const renderLine = (line: string, idx: number) => {
         if (line.trim().startsWith('//') || line.trim().startsWith('/*') || line.trim().startsWith('*')) {
             return (
-                <span key={idx} className="text-[#8b949e] italic block leading-relaxed font-[family-name:var(--font-kantumruy)]">
+                <span key={idx} className="text-[#8b949e] italic block leading-relaxed font-kantumruy">
                     {line}
                 </span>
             );
@@ -159,13 +159,13 @@ function HighlightedCode({ code }: { code: string }) {
             const token = match[0];
             if (token.startsWith('//')) {
                 parts.push(
-                    <span key={match.index} className="text-[#8b949e] italic font-[family-name:var(--font-kantumruy)]">
+                    <span key={match.index} className="text-[#8b949e] italic font-kantumruy">
                         {token}
                     </span>
                 );
             } else if (token.startsWith('"') || token.startsWith("'") || token.startsWith('`')) {
                 parts.push(
-                    <span key={match.index} className="text-[#a5d6ff] font-[family-name:var(--font-kantumruy)]">
+                    <span key={match.index} className="text-[#a5d6ff] font-kantumruy">
                         {token}
                     </span>
                 );

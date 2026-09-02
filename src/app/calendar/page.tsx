@@ -20,7 +20,7 @@ export default function CalendarPage() {
                 </svg>
 
                 {/* Main Ambient Lights */}
-                <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] opacity-20 dark:opacity-30 blur-[120px] bg-linear-to-r from-sky-500 via-teal-500 to-green-500 rounded-full mix-blend-multiply dark:mix-blend-screen" />
+                <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-250 h-125 opacity-20 dark:opacity-30 blur-[120px] bg-linear-to-r from-sky-500 via-teal-500 to-green-500 rounded-full mix-blend-multiply dark:mix-blend-screen" />
             </div>
 
             <Header />
@@ -36,7 +36,7 @@ export default function CalendarPage() {
                         </p>
                     </div>
                     <Suspense fallback={
-                        <div className="w-full h-[600px] rounded-3xl bg-neutral-100/50 dark:bg-white/5 animate-pulse border border-neutral-200 dark:border-white/10 flex items-center justify-center">
+                        <div className="w-full h-150 rounded-3xl bg-neutral-100/50 dark:bg-white/5 animate-pulse border border-neutral-200 dark:border-white/10 flex items-center justify-center">
                             <span className="text-sm font-medium text-neutral-400">Loading Calendar...</span>
                         </div>
                     }>

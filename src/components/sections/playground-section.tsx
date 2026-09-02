@@ -152,7 +152,7 @@ export function PlaygroundSection({ mounted, now }: PlaygroundSectionProps) {
                     {/* Animated background glow */}
                     <div className="absolute -inset-0.5 bg-linear-to-r from-teal-500 via-sky-500 to-green-500 rounded-[2rem] blur-xl opacity-10 group-hover:opacity-20 transition duration-1000 group-hover:duration-200" />
 
-                    <div className="bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-3xl border border-neutral-200 dark:border-white/10 rounded-[2rem] p-8 md:p-12 relative overflow-hidden flex flex-col justify-center min-h-[300px] w-full">
+                    <div className="bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-3xl border border-neutral-200 dark:border-white/10 rounded-[2rem] p-8 md:p-12 relative overflow-hidden flex flex-col justify-center min-h-75 w-full">
                         {/* Ambient light orbs */}
                         <div className="absolute -top-32 -right-32 w-64 h-64 bg-teal-500/10 blur-[100px] rounded-full" />
                         <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-sky-500/10 blur-[100px] rounded-full" />

@@ -20,7 +20,7 @@ export function QuickStartSection() {
                         <code className="text-[#ff7b72]">import</code> {'{ '}FormatDateTime{' }'} <code className="text-[#ff7b72]">from</code> <code className="text-[#a5d6ff]">'@pphatdev/format-datetime'</code>;<br /><br />
                         <code className="text-[#ff7b72]">const</code> date = <code className="text-[#ff7b72]">new</code> <code className="text-[#d2a8ff]">Date</code>();<br />
                         <code className="text-[#ff7b72]">const</code> formatted = <code className="text-[#79c0ff]">FormatDateTime</code>.<code className="text-[#d2a8ff]">format</code>(date, <code className="text-[#a5d6ff]">'DD MMMM YYYY'</code>, <code className="text-[#a5d6ff]">'km'</code>);<br />
-                        <code className="text-[#8b949e]">// Result: &quot;<span className="font-[family-name:var(--font-kantumruy)]">០១ មករា ២០២៤</span>&quot;</code>
+                        <code className="text-[#8b949e]">// Result: &quot;<span className="font-kantumruy">០១ មករា ២០២៤</span>&quot;</code>
                     </CodeSnippet>
                 </div>
 
@@ -32,7 +32,7 @@ export function QuickStartSection() {
                         <code className="text-[#ff7b72]">import</code> {'{ '}FormatDateTime{' }'} <code className="text-[#ff7b72]">from</code> <code className="text-[#a5d6ff]">'@pphatdev/format-datetime'</code>;<br /><br />
                         <code className="text-[#ff7b72]">const</code> date = <code className="text-[#ff7b72]">new</code> <code className="text-[#d2a8ff]">Date</code>();<br />
                         <code className="text-[#ff7b72]">const</code> lunar = <code className="text-[#79c0ff]">FormatDateTime</code>.<code className="text-[#d2a8ff]">getLunarDate</code>(date);<br />
-                        <code className="text-[#8b949e]">// Result: &quot;<span className="font-[family-name:var(--font-kantumruy)]">ថ្ងៃចន្ទ ទី១ ខែមករា ឆ្នាំរោង ឆស័ក ព.ស. ២៥៦៨</span>&quot;</code>
+                        <code className="text-[#8b949e]">// Result: &quot;<span className="font-kantumruy">ថ្ងៃចន្ទ ទី១ ខែមករា ឆ្នាំរោង ឆស័ក ព.ស. ២៥៦៨</span>&quot;</code>
                     </CodeSnippet>
                 </div>
 
@@ -50,8 +50,8 @@ export function QuickStartSection() {
                             <code className="text-[#8b949e]">/*
                                 Result: {'{'}
                                 date: "2024-04-13T15:17:00.000Z",
-                                lunarDate: &quot;<span className="font-[family-name:var(--font-kantumruy)]">ថ្ងៃសៅរ៍ ទី៥ ខែចេត្រ ឆ្នាំរោង ឆស័ក ព.ស. ២៥៦៨</span>&quot;,
-                                angel: &quot;<span className="font-[family-name:var(--font-kantumruy)]">មហោធរៈទេវី</span>&quot;
+                                lunarDate: &quot;<span className="font-kantumruy">ថ្ងៃសៅរ៍ ទី៥ ខែចេត្រ ឆ្នាំរោង ឆស័ក ព.ស. ២៥៦៨</span>&quot;,
+                                angel: &quot;<span className="font-kantumruy">មហោធរៈទេវី</span>&quot;
                                 {'}'}
                                 */</code>
                         </CodeSnippet>

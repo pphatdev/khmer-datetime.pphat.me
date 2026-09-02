@@ -71,7 +71,7 @@ const DayCell = memo(function DayCell({ cell, onSelect }: DayCellProps) {
         <div
             onClick={() => onSelect(date)}
             className={cn(
-                "relative flex flex-col items-center justify-between p-1 sm:p-1.5 md:p-2 min-h-[64px] sm:min-h-[80px] md:min-h-[96px] rounded-xl sm:rounded-2xl border transition-all duration-200 group/cell overflow-hidden cursor-pointer",
+                "relative flex flex-col items-center justify-between p-1 sm:p-1.5 md:p-2 min-h-16 sm:min-h-20 md:min-h-24 rounded-xl sm:rounded-2xl border transition-all duration-200 group/cell overflow-hidden cursor-pointer",
                 isCurrentMonth
                     ? isRedDay
                         ? "bg-rose-500/10 dark:bg-rose-500/15 border-rose-500/30 dark:border-rose-500/30 hover:border-rose-500 hover:bg-rose-500/20 hover:shadow-md hover:shadow-rose-500/15"
@@ -128,7 +128,7 @@ const DayCell = memo(function DayCell({ cell, onSelect }: DayCellProps) {
             </span>
             <div className="flex flex-col items-center z-10 max-w-full px-0.5 my-0.5">
                 <span className={cn(
-                    "text-[9px] sm:text-[11px] md:text-xs font-medium leading-none font-[family-name:var(--font-kantumruy)]",
+                    "text-[9px] sm:text-[11px] md:text-xs font-medium leading-none font-kantumruy",
                     isRedDay
                         ? isCurrentMonth
                             ? "text-rose-600 dark:text-rose-400 font-bold"
@@ -144,7 +144,7 @@ const DayCell = memo(function DayCell({ cell, onSelect }: DayCellProps) {
                     {lunarDayNum}
                 </span>
                 <span className={cn(
-                    "text-[7px] sm:text-[9px] md:text-[10px] mt-0.5 font-[family-name:var(--font-kantumruy)] truncate max-w-full text-center leading-none",
+                    "text-[7px] sm:text-[9px] md:text-[10px] mt-0.5 font-kantumruy truncate max-w-full text-center leading-none",
                     isRedDay
                         ? isCurrentMonth
                             ? "text-rose-600/80 dark:text-rose-400/80 font-medium"
@@ -162,7 +162,7 @@ const DayCell = memo(function DayCell({ cell, onSelect }: DayCellProps) {
             </div>
             {isCurrentMonth && hasHoliday ? (
                 <div 
-                    className="w-full mt-0.5 px-1 py-0.5 rounded-md bg-rose-500/15 dark:bg-rose-500/25 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-[7px] sm:text-[8px] md:text-[9.5px] font-bold font-[family-name:var(--font-kantumruy)] truncate text-center leading-tight shadow-2xs z-10"
+                    className="w-full mt-0.5 px-1 py-0.5 rounded-md bg-rose-500/15 dark:bg-rose-500/25 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-[7px] sm:text-[8px] md:text-[9.5px] font-bold font-kantumruy truncate text-center leading-tight shadow-2xs z-10"
                     title={`${fullKhmerHolidayName} (${holiday?.name})`}
                 >
                     {khmerHolidayName}
@@ -212,12 +212,12 @@ function khmerPhaseNameFor(dayNum: number, isWaxing: boolean): string {
 // Map a Khmer lunar day to a normalized phase 0..1 (0=new, 0.5=full, 1=new).
 function khmerLunarPhaseValue(dayNum: number, isWaxing: boolean): number {
     // 30-day lunar month split: waxing 1..15 → 1/30..15/30 (=0.5=full)
-    //                          waning 1..15 → 16/30..30/30 (≈1=new)
+    // waning 1..15 → 16/30..30/30 (≈1=new)
     return isWaxing ? dayNum / 30 : 0.5 + dayNum / 30;
 }
 
-const MoonPhaseGraphic = memo(function MoonPhaseGraphic({ 
-    phase, 
+const MoonPhaseGraphic = memo(function MoonPhaseGraphic({
+    phase,
     size = 88,
     rotation = 15 
 }: { 
@@ -339,11 +339,11 @@ function DetailRow({ khmer, english, value }: { khmer?: string; english: string;
         <>
             <dt className="flex flex-col justify-center py-2 border-b border-neutral-100 dark:border-white/5">
                 {khmer && (
-                    <span className="font-[family-name:var(--font-kantumruy)] text-sm text-neutral-700 dark:text-neutral-300 leading-none">{khmer}</span>
+                    <span className="font-kantumruy text-sm text-neutral-700 dark:text-neutral-300 leading-none">{khmer}</span>
                 )}
                 <span className={cn("text-[9px] uppercase tracking-widest text-neutral-400", khmer && "mt-1")}>{english}</span>
             </dt>
-            <dd className="text-neutral-900 dark:text-neutral-100 font-semibold text-right py-2 border-b border-neutral-100 dark:border-white/5 font-[family-name:var(--font-kantumruy)] leading-snug">
+            <dd className="text-neutral-900 dark:text-neutral-100 font-semibold text-right py-2 border-b border-neutral-100 dark:border-white/5 font-kantumruy leading-snug">
                 {value}
             </dd>
         </>
@@ -415,7 +415,7 @@ const DateDetailPopup = memo(function DateDetailPopup({
             month: safe('lM', '—'),
             year: safe('lA', '—'),
             era: safe('BBBB', '—'),
-            full: safe('ថ្ងៃlW ldlN ខែlM ឆ្នាំlA lE ព.ស. BBBB', '—'),
+            full: safe('ថ្ងៃlW ldlN ខែlM ឆ្នាំlA lE ព.ស. BBBB គ.ស. YYYY, ត្រូវនឹងថ្ងៃទីdd ខែMMMM ឆ្នាំYYYY', '—'),
         };
     }, [selectedDate, locale]);
 
@@ -588,7 +588,7 @@ const DateDetailPopup = memo(function DateDetailPopup({
     return (
         <div
             className={cn(
-                "fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-0 sm:p-4 transition-all duration-300",
+                "fixed inset-0 z-100 flex items-end justify-center sm:items-center p-0 sm:p-4 transition-all duration-300",
                 selectedDate ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
             )}
             role="dialog"
@@ -605,7 +605,7 @@ const DateDetailPopup = memo(function DateDetailPopup({
 
             <div
                 className={cn(
-                    "relative w-full sm:w-[520px] max-h-[92vh] flex flex-col overflow-hidden bg-white/95 dark:bg-neutral-900/95 backdrop-blur-2xl border-t sm:border border-neutral-200 dark:border-white/10 sm:rounded-3xl rounded-t-3xl shadow-2xl transition-all duration-300 ease-out pointer-events-auto",
+                    "relative w-full sm:w-130 max-h-[92vh] flex flex-col overflow-hidden bg-white/95 dark:bg-neutral-900/95 backdrop-blur-2xl border-t sm:border border-neutral-200 dark:border-white/10 sm:rounded-3xl rounded-t-3xl shadow-2xl transition-all duration-300 ease-out pointer-events-auto",
                     selectedDate ? "translate-y-0 scale-100" : "translate-y-full sm:translate-y-8 sm:scale-95 opacity-0"
                 )}
             >
@@ -642,7 +642,7 @@ const DateDetailPopup = memo(function DateDetailPopup({
                             </div>
 
                             <div className="relative mt-4 text-center max-w-full">
-                                <p className="text-base sm:text-lg font-bold text-neutral-900 dark:text-white font-[family-name:var(--font-kantumruy)] leading-snug px-4">
+                                <p className="text-base sm:text-lg font-bold text-neutral-900 dark:text-white font-kantumruy leading-snug px-4">
                                     {lunarStrings.full}
                                 </p>
                                 <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-1.5 font-medium">
@@ -651,7 +651,7 @@ const DateDetailPopup = memo(function DateDetailPopup({
                                 <div className="flex items-center justify-center gap-2 mt-2.5 text-[10px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                                     <span className="inline-flex items-center gap-1"><Moon className="w-3 h-3" /> {phaseName}</span>
                                     <span className="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-600" />
-                                    <span className="font-[family-name:var(--font-kantumruy)] normal-case tracking-normal text-xs text-neutral-700 dark:text-neutral-300">
+                                    <span className="font-kantumruy normal-case tracking-normal text-xs text-neutral-700 dark:text-neutral-300">
                                         {lunarStrings.day}
                                     </span>
                                 </div>
@@ -664,7 +664,7 @@ const DateDetailPopup = memo(function DateDetailPopup({
                                             alt="ថ្ងៃសីល" 
                                             className="w-4 h-4 sm:w-5 sm:h-5 object-contain shrink-0" 
                                         />
-                                        <span className="text-xs sm:text-sm font-bold font-[family-name:var(--font-kantumruy)] leading-none">
+                                        <span className="text-xs sm:text-sm font-bold font-kantumruy leading-none">
                                             {holyDayLabel}
                                         </span>
                                     </div>
@@ -700,7 +700,7 @@ const DateDetailPopup = memo(function DateDetailPopup({
                         </div>
 
                         {/* Tab content */}
-                        <div className="px-4 sm:px-6 pt-4 pb-4 flex-1 overflow-y-auto min-h-[180px]">
+                        <div className="px-4 sm:px-6 pt-4 pb-4 flex-1 overflow-y-auto min-h-45">
                             {activeTab === 'lunar' && (
                                 <dl className="grid grid-cols-[minmax(88px,auto)_1fr] gap-x-4 text-sm">
                                     <DetailRow khmer="ថ្ងៃ" english="Weekday" value={lunarStrings.weekday} />
@@ -728,12 +728,12 @@ const DateDetailPopup = memo(function DateDetailPopup({
                                         <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500 mb-1">Name</p>
                                         <p className="font-bold text-neutral-900 dark:text-white">{holiday.name}</p>
                                         {khmerHolidayName && (
-                                            <p className="text-teal-600 dark:text-teal-400 font-[family-name:var(--font-kantumruy)] mt-0.5 leading-snug">{khmerHolidayName}</p>
+                                            <p className="text-teal-600 dark:text-teal-400 font-kantumruy mt-0.5 leading-snug">{khmerHolidayName}</p>
                                         )}
                                         {shortKhmerHolidayName && shortKhmerHolidayName !== khmerHolidayName && (
                                             <p className="text-xs text-neutral-500 mt-1">
                                                 <span className="opacity-70">Short: </span>
-                                                <span className="font-[family-name:var(--font-kantumruy)]">{shortKhmerHolidayName}</span>
+                                                <span className="font-kantumruy">{shortKhmerHolidayName}</span>
                                             </p>
                                         )}
                                     </div>
@@ -766,7 +766,7 @@ const DateDetailPopup = memo(function DateDetailPopup({
                         </div>
 
                         {/* Actions */}
-                        <div className="px-4 sm:px-6 py-3 border-t border-neutral-200/60 dark:border-white/10 bg-neutral-50/60 dark:bg-white/[0.02] flex items-center gap-2 shrink-0">
+                        <div className="px-4 sm:px-6 py-3 border-t border-neutral-200/60 dark:border-white/10 bg-neutral-50/60 dark:bg-white/2 flex items-center gap-2 shrink-0">
                             <ActionButton
                                 onClick={handleCopy}
                                 icon={copied === 'copy' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
@@ -1225,7 +1225,7 @@ export function LunarCalendarWidget() {
                                     <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-neutral-900 dark:text-white tracking-tight truncate">
                                         {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
                                     </h2>
-                                    <p className="text-xs sm:text-sm font-medium text-teal-600 dark:text-teal-400 mt-0.5 font-[family-name:var(--font-kantumruy)] truncate">
+                                    <p className="text-xs sm:text-sm font-medium text-teal-600 dark:text-teal-400 mt-0.5 font-kantumruy truncate">
                                         {currentMonthLunarLabel}
                                     </p>
                                 </div>
@@ -1233,7 +1233,7 @@ export function LunarCalendarWidget() {
                             
                             {/* Controls Row (Language + Prev/Today/Next) */}
                             <div className="flex items-center gap-2 sm:gap-3 w-full md:w-auto justify-between sm:justify-end">
-                                <div className="w-1/2 sm:w-[150px]">
+                                <div className="w-1/2 sm:w-37.5">
                                     <Select value={locale} onValueChange={handleLocaleChange}>
                                         <SelectTrigger className="w-full bg-neutral-100/80 dark:bg-white/5 border border-neutral-200/50 dark:border-white/10 text-neutral-900 dark:text-white rounded-xl backdrop-blur-md focus:ring-teal-500 focus:border-teal-500 font-medium text-xs sm:text-sm h-9 sm:h-10">
                                             <div className="flex items-center gap-1.5 truncate">
@@ -1241,7 +1241,7 @@ export function LunarCalendarWidget() {
                                                 <SelectValue placeholder="Language" />
                                             </div>
                                         </SelectTrigger>
-                                        <SelectContent className="z-[150]">
+                                        <SelectContent className="z-150">
                                             <SelectItem value="km-KH">Khmer (km-KH)</SelectItem>
                                             <SelectItem value="en-US">English (en-US)</SelectItem>
                                             <SelectItem value="fr-FR">French (fr-FR)</SelectItem>
@@ -1330,7 +1330,7 @@ export function LunarCalendarWidget() {
                         </div>
 
                         {/* Comparison Grid Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[500px] overflow-y-auto pr-1">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-125 overflow-y-auto pr-1">
                             {filteredHolidays.map((h) => {
                                 const [y, m, d] = h.date.split('-').map(Number);
                                 const hDate = new Date(y, m - 1, d);
@@ -1362,7 +1362,7 @@ export function LunarCalendarWidget() {
                                                 <h3 className="text-sm sm:text-base font-bold text-neutral-900 dark:text-white mt-1.5">
                                                     {h.name}
                                                 </h3>
-                                                <p className="text-xs font-medium text-rose-600 dark:text-rose-400 mt-0.5 font-[family-name:var(--font-kantumruy)]">
+                                                <p className="text-xs font-medium text-rose-600 dark:text-rose-400 mt-0.5 font-kantumruy">
                                                     {khmerName}
                                                 </p>
                                             </div>
@@ -1381,7 +1381,7 @@ export function LunarCalendarWidget() {
                                         <div className="pt-2 border-t border-neutral-100 dark:border-white/5 flex items-center justify-between text-xs text-neutral-600 dark:text-neutral-400">
                                             <div className="flex items-center gap-1.5 truncate">
                                                 <MoonStar className="w-3.5 h-3.5 text-teal-500 shrink-0" />
-                                                <span className="font-[family-name:var(--font-kantumruy)] truncate">
+                                                <span className="font-kantumruy truncate">
                                                     {lunarString}
                                                 </span>
                                             </div>

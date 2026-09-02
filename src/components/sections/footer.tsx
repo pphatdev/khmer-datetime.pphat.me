@@ -9,7 +9,7 @@ export default function Footer() {
     return (
         <footer className="relative w-full pb-12 sm:pb-16 pt-10 sm:pt-14 flex flex-col items-center overflow-hidden mt-8 sm:mt-12 border-t border-neutral-200/60 dark:border-white/5">
             {/* Ambient background glow effect */}
-            <div className="absolute -bottom-32 left-1/2 -translate-x-1/2 w-[350px] sm:w-[600px] h-[200px] sm:h-[300px] bg-teal-500/10 dark:bg-teal-500/15 blur-[90px] rounded-full pointer-events-none" />
+            <div className="absolute -bottom-32 left-1/2 -translate-x-1/2 w-87.5 sm:w-150 h-50 sm:h-75 bg-teal-500/10 dark:bg-teal-500/15 blur-[90px] rounded-full pointer-events-none" />
 
             <div className="relative z-10 flex flex-col items-center gap-6 sm:gap-8 w-full max-w-4xl px-4 text-center">
                 {/* Responsive Badges (NPM Provenance & Creator) */}
