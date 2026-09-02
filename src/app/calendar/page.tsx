@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { LunarCalendarWidget } from "@/components/lunar-calendar-widget";
 import Header from '@/components/sections/header';
 import Footer from '@/components/sections/footer';
@@ -34,7 +35,13 @@ export default function CalendarPage() {
                             Interactive astronomical calendar synchronized with the traditional Khmer lunar cycle, Buddhist Era, and official Cambodian public holidays.
                         </p>
                     </div>
-                    <LunarCalendarWidget />
+                    <Suspense fallback={
+                        <div className="w-full h-[600px] rounded-3xl bg-neutral-100/50 dark:bg-white/5 animate-pulse border border-neutral-200 dark:border-white/10 flex items-center justify-center">
+                            <span className="text-sm font-medium text-neutral-400">Loading Calendar...</span>
+                        </div>
+                    }>
+                        <LunarCalendarWidget />
+                    </Suspense>
                 </section>
             </main>
 
