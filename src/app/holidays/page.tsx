@@ -1,9 +1,32 @@
-'use client';
-
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { PublicHolidaysWidget } from '@/components/public-holidays-widget';
 import Header from '@/components/sections/header';
 import Footer from '@/components/sections/footer';
+
+export const metadata: Metadata = {
+    title: "Cambodia Public Holidays",
+    description: "Explore official Cambodian public holidays by year and month, with exact Khmer translations and traditional Buddhist lunar alignments.",
+    openGraph: {
+        title: "Cambodia Public Holidays | KH DateTime",
+        description: "Explore official Cambodian public holidays by year and month, with exact Khmer translations and traditional Buddhist lunar alignments.",
+        url: "https://format-datetime.pphat.me/holidays",
+        images: [
+            {
+                url: "/thumbnail/holiday.webp",
+                width: 1200,
+                height: 630,
+                alt: "Cambodia Public Holidays Thumbnail",
+            }
+        ]
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Cambodia Public Holidays | KH DateTime",
+        description: "Explore official Cambodian public holidays by year and month, with exact Khmer translations and traditional Buddhist lunar alignments.",
+        images: ["/thumbnail/holiday.webp"]
+    }
+};
 
 export default function HolidaysPage() {
     return (

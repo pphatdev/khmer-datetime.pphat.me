@@ -67,6 +67,12 @@ export const metadata: Metadata = {
         siteName: "KH DateTime Formatter",
         images: [
             {
+                url: "/thumbnail/home.webp",
+                width: 1200,
+                height: 630,
+                alt: "KH DateTime Formatter Thumbnail",
+            },
+            {
                 url: "/cover.png",
                 width: 1200,
                 height: 630,

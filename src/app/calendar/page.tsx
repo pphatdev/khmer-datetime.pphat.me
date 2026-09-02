@@ -1,9 +1,32 @@
-'use client';
-
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { LunarCalendarWidget } from "@/components/lunar-calendar-widget";
 import Header from '@/components/sections/header';
 import Footer from '@/components/sections/footer';
+
+export const metadata: Metadata = {
+    title: "Khmer Lunar Calendar",
+    description: "Interactive astronomical calendar synchronized with the traditional Khmer lunar cycle, Buddhist Era, and official Cambodian public holidays.",
+    openGraph: {
+        title: "Khmer Lunar Calendar | KH DateTime",
+        description: "Interactive astronomical calendar synchronized with the traditional Khmer lunar cycle, Buddhist Era, and official Cambodian public holidays.",
+        url: "https://format-datetime.pphat.me/calendar",
+        images: [
+            {
+                url: "/thumbnail/calendar.webp",
+                width: 1200,
+                height: 630,
+                alt: "Khmer Lunar Calendar Thumbnail",
+            }
+        ]
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Khmer Lunar Calendar | KH DateTime",
+        description: "Interactive astronomical calendar synchronized with the traditional Khmer lunar cycle, Buddhist Era, and official Cambodian public holidays.",
+        images: ["/thumbnail/calendar.webp"]
+    }
+};
 
 export default function CalendarPage() {
     return (
