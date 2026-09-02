@@ -48,14 +48,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         // Month filters for calendar and public holidays
         for (let month = 1; month <= 12; month++) {
             entries.push({
-                url: `${baseUrl}/calendar?year=${year}&month=${month}`,
+                url: `${baseUrl}/calendar?year=${year}&amp;month=${month}`,
                 lastModified: now,
                 changeFrequency: 'weekly',
                 priority: year === currentYear ? 0.8 : 0.6,
             });
 
             entries.push({
-                url: `${baseUrl}/holidays?year=${year}&month=${month}`,
+                url: `${baseUrl}/holidays?year=${year}&amp;month=${month}`,
                 lastModified: now,
                 changeFrequency: 'monthly',
                 priority: year === currentYear ? 0.75 : 0.55,
