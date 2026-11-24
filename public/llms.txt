@@ -5,9 +5,9 @@
 - **NPM Package**: `@pphatdev/format-datetime`
 - **JSR Package**: `jsr:@pphatdev/format-datetime`
 - **Repository**: https://github.com/pphatdev/khmer-datetime
-- **Demo & Web Calendar**: https://format-datetime.pphat.me
-- **Khmer Lunar Calendar**: https://format-datetime.pphat.me/calendar
-- **Cambodia Public Holidays**: https://format-datetime.pphat.me/holidays
+- **Demo & Web Calendar**: https://khmer-datetime.pphat.me
+- **Khmer Lunar Calendar**: https://khmer-datetime.pphat.me/calendar
+- **Cambodia Public Holidays**: https://khmer-datetime.pphat.me/holidays
 - **Full LLM Context**: [llms-full.txt](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/llms-full.txt)
 
 ### Multilingual & Alternate Names

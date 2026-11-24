@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Khmer Calendar & Lunar Date Today | KH DateTime (ប្រតិទិនខ្មែរ)",
         description: "Check what day is today in Cambodia and the Khmer Lunar Calendar. Live Cambodian date, Buddhist Era, public holidays, and date utility.",
-        url: "https://format-datetime.pphat.me",
+        url: "https://khmer-datetime.pphat.me",
         images: [
             {
                 url: "/thumbnail/home.webp",

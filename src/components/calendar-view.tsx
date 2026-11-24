@@ -14,13 +14,13 @@ export const calendarJsonLd = {
                     "@type": "ListItem",
                     "position": 1,
                     "name": "Home",
-                    "item": "https://format-datetime.pphat.me"
+                    "item": "https://khmer-datetime.pphat.me"
                 },
                 {
                     "@type": "ListItem",
                     "position": 2,
                     "name": "Khmer Lunar Calendar",
-                    "item": "https://format-datetime.pphat.me/calendar"
+                    "item": "https://khmer-datetime.pphat.me/calendar"
                 }
             ]
         },
@@ -39,7 +39,7 @@ export const calendarJsonLd = {
             "operatingSystem": "All",
             "applicationCategory": "UtilitiesApplication",
             "description": "Interactive Khmer lunar calendar synchronized with Soriyatra astronomical formulas, Buddhist Era, and Cambodian public holidays.",
-            "url": "https://format-datetime.pphat.me/calendar"
+            "url": "https://khmer-datetime.pphat.me/calendar"
         }
     ]
 };

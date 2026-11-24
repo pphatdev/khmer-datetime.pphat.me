@@ -16,7 +16,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-    metadataBase: new URL("https://format-datetime.pphat.me"),
+    metadataBase: new URL("https://khmer-datetime.pphat.me"),
     title: {
         default: "Khmer Calendar & Lunar Date | KH DateTime (ប្រតិទិនខ្មែរ)",
         template: "%s | KH DateTime",
@@ -107,7 +107,7 @@ export const metadata: Metadata = {
     openGraph: {
         type: "website",
         locale: "en_US",
-        url: "https://format-datetime.pphat.me",
+        url: "https://khmer-datetime.pphat.me",
         title: "Khmer Calendar & Lunar Date | KH DateTime (ប្រតិទិនខ្មែរ)",
         description: "Interactive Khmer Calendar, today's lunar date in Cambodia, Buddhist Era, Cambodian public holidays, and TypeScript date formatting utility.",
         siteName: "KH DateTime Formatter",
@@ -137,7 +137,7 @@ export const metadata: Metadata = {
         title: "Khmer Calendar & Lunar Date | KH DateTime (ប្រតិទិនខ្មែរ)",
         description: "Interactive Khmer Calendar, today's lunar date in Cambodia, Buddhist Era, Cambodian public holidays, and TypeScript date formatting utility.",
         creator: "@pphatdev",
-        images: ["https://format-datetime.pphat.me/cover.png"]
+        images: ["https://khmer-datetime.pphat.me/cover.png"]
     },
     robots: {
         index: true,
@@ -157,8 +157,8 @@ const jsonLd = {
     "@graph": [
         {
             "@type": "WebSite",
-            "@id": "https://format-datetime.pphat.me/#website",
-            "url": "https://format-datetime.pphat.me",
+            "@id": "https://khmer-datetime.pphat.me/#website",
+            "url": "https://khmer-datetime.pphat.me",
             "name": "KH DateTime - Khmer Lunar Calendar & Formatter",
             "alternateName": [
                 "Khmer Calendar",
@@ -175,12 +175,12 @@ const jsonLd = {
         },
         {
             "@type": "WebApplication",
-            "@id": "https://format-datetime.pphat.me/#app",
+            "@id": "https://khmer-datetime.pphat.me/#app",
             "name": "KH DateTime Formatter",
             "alternateName": "Khmer Lunar Calendar & DateTime Utility",
-            "url": "https://format-datetime.pphat.me",
-            "logo": "https://format-datetime.pphat.me/logo/logo-dark.png",
-            "image": "https://format-datetime.pphat.me/cover.png",
+            "url": "https://khmer-datetime.pphat.me",
+            "logo": "https://khmer-datetime.pphat.me/logo/logo-dark.png",
+            "image": "https://khmer-datetime.pphat.me/cover.png",
             "description": "A robust, lightweight TypeScript utility and web application for Khmer standard and lunar calendar arithmetic, today's date lookup, and Cambodian holidays.",
             "applicationCategory": "UtilitiesApplication",
             "operatingSystem": "Any",
@@ -195,7 +195,7 @@ const jsonLd = {
                 "url": "https://pphat.me",
                 "logo": {
                     "@type": "ImageObject",
-                    "url": "https://format-datetime.pphat.me/logo/logo-dark.png"
+                    "url": "https://khmer-datetime.pphat.me/logo/logo-dark.png"
                 }
             }
         }

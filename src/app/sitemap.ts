@@ -4,7 +4,7 @@ import { fetchCambodiaHolidays } from '@/lib/holidays';
 export const dynamic = 'force-static';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = 'https://format-datetime.pphat.me';
+    const baseUrl = 'https://khmer-datetime.pphat.me';
     const now = new Date();
     const currentYear = now.getFullYear();
 

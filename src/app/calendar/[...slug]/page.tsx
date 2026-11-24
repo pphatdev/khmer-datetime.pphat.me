@@ -99,7 +99,7 @@ export async function generateMetadata({
         openGraph: {
             title: dynamicTitle,
             description: dynamicDesc,
-            url: `https://format-datetime.pphat.me/calendar/${slug.join('/')}`,
+            url: `https://khmer-datetime.pphat.me/calendar/${slug.join('/')}`,
             images: [
                 {
                     url: "/thumbnail/calendar.webp",

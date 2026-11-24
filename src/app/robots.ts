@@ -8,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
             userAgent: '*',
             allow: '/',
         },
-        sitemap: 'https://format-datetime.pphat.me/sitemap.xml',
+        sitemap: 'https://khmer-datetime.pphat.me/sitemap.xml',
     };
 }

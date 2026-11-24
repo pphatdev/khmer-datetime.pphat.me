@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Khmer Lunar Calendar 2026 & Today's Date | ប្រតិទិនចន្ទគតិខ្មែរ",
         description: "Interactive Khmer lunar calendar 2026/2025: check what day is today in Cambodia, waxing and waning moon phases, Buddhist Holy Days (ថ្ងៃសីល), and official Cambodian public holidays.",
-        url: "https://format-datetime.pphat.me/calendar",
+        url: "https://khmer-datetime.pphat.me/calendar",
         images: [
             {
                 url: "/thumbnail/calendar.webp",

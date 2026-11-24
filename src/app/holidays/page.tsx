@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Cambodia Public Holidays 2026 & 2025 | បុណ្យជាតិខ្មែរ",
         description: "Explore official Cambodian public holidays by year and month, with exact Khmer translations and traditional Buddhist lunar alignments.",
-        url: "https://format-datetime.pphat.me/holidays",
+        url: "https://khmer-datetime.pphat.me/holidays",
         images: [
             {
                 url: "/thumbnail/holiday.webp",
@@ -56,13 +56,13 @@ const holidaysJsonLd = {
                     "@type": "ListItem",
                     "position": 1,
                     "name": "Home",
-                    "item": "https://format-datetime.pphat.me"
+                    "item": "https://khmer-datetime.pphat.me"
                 },
                 {
                     "@type": "ListItem",
                     "position": 2,
                     "name": "Cambodia Public Holidays",
-                    "item": "https://format-datetime.pphat.me/holidays"
+                    "item": "https://khmer-datetime.pphat.me/holidays"
                 }
             ]
         },
@@ -71,7 +71,7 @@ const holidaysJsonLd = {
             "name": "Cambodia Public Holidays 2026 & 2025",
             "alternateName": ["បុណ្យជាតិខ្មែរ", "ថ្ងៃឈប់សម្រាកនៅកម្ពុជា"],
             "description": "Official list of Cambodian public holidays synchronized with solar and lunar calendar calculations.",
-            "url": "https://format-datetime.pphat.me/holidays"
+            "url": "https://khmer-datetime.pphat.me/holidays"
         }
     ]
 };
