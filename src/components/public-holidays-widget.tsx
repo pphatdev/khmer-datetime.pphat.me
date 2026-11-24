@@ -403,7 +403,7 @@ export function PublicHolidaysWidget() {
                                             </div>
                                             
                                             <Link
-                                                href={`/calendar?date=${h.date}`}
+                                                href={h.date ? `/calendar/${h.date.replace(/-/g, '/')}` : '/calendar'}
                                                 className="p-2 rounded-xl bg-neutral-100 dark:bg-white/5 group-hover/card:bg-rose-500 group-hover/card:text-white text-neutral-500 transition-all cursor-pointer shrink-0"
                                                 title="View this date in Khmer Lunar Calendar"
                                             >

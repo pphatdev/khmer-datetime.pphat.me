@@ -20,7 +20,6 @@ import {
     PublicHoliday,
     SHORT_KHMER_HOLIDAY_NAMES
 } from '@/lib/holidays';
-import { DateDetailPopup } from '@/components/date-detail-popup';
 
 // Module-level cache for lunar computations. Keyed by locale → dateKey → { day, phase }.
 // Persists across re-renders/nav; module scope keeps the ref out of render-time mutations.
@@ -43,10 +42,8 @@ interface CalendarCell {
 
 const DayCell = memo(function DayCell({
     cell,
-    onSelect,
 }: {
     cell: CalendarCell;
-    onSelect: (date: Date) => void;
 }) {
     const {
         date,
@@ -65,12 +62,13 @@ const DayCell = memo(function DayCell({
     const hasHoliday = Boolean(holiday);
     const khmerHolidayName = holiday ? (SHORT_KHMER_HOLIDAY_NAMES[holiday.name] || holiday.name) : '';
     const fullKhmerHolidayName = holiday ? (SHORT_KHMER_HOLIDAY_NAMES[holiday.name] || holiday.name) : '';
+    const cellUrl = `/calendar/${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
 
     return (
-        <div
-            onClick={() => onSelect(date)}
+        <Link
+            href={cellUrl}
             className={cn(
-                "min-h-16 sm:min-h-20 md:min-h-24 p-1 sm:p-2 rounded-xl sm:rounded-2xl transition-all duration-200 border flex flex-col justify-between relative group/cell cursor-pointer select-none",
+                "min-h-16 sm:min-h-20 md:min-h-24 p-1 sm:p-2 rounded-xl sm:rounded-2xl transition-all duration-200 border flex flex-col justify-between relative group/cell cursor-pointer select-none no-underline",
                 // Current vs other month
                 isCurrentMonth
                     ? "bg-white/70 dark:bg-white/4 border-neutral-200/80 dark:border-white/10 hover:border-teal-500/50 hover:bg-teal-50/30 dark:hover:bg-teal-950/20 hover:shadow-md hover:-translate-y-0.5"
@@ -159,7 +157,7 @@ const DayCell = memo(function DayCell({
                 <div className="h-1.5 sm:h-2" />
             )}
             <div className="absolute inset-0 bg-linear-to-b from-transparent to-teal-500/5 opacity-0 group-hover/cell:opacity-100 rounded-xl sm:rounded-2xl transition-opacity pointer-events-none" />
-        </div>
+        </Link>
     );
 });
 
@@ -190,14 +188,43 @@ function CalendarGridSkeleton() {
 
 // ─── Main widget ─────────────────────────────────────────────────────────────
 
-export function LunarCalendarWidget() {
+export function LunarCalendarWidget({
+    initialSlug,
+}: {
+    initialSlug?: string[];
+} = {}) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    // Parse initial date from URL parameters (?year=2026&month=4 or ?date=2026-04-14)
+    // Parse initial date from initialSlug, URL path (/calendar/2026/11/24), or legacy query params
     const [currentDate, setCurrentDate] = useState<Date>(() => {
         const now = new Date();
+
+        // 1. Initial slug passed from server / static page params
+        if (initialSlug && initialSlug.length > 0) {
+            const y = parseInt(initialSlug[0], 10);
+            const m = initialSlug[1] ? parseInt(initialSlug[1], 10) - 1 : now.getMonth();
+            const d = initialSlug[2] ? parseInt(initialSlug[2], 10) : 1;
+            if (!isNaN(y) && !isNaN(m) && m >= 0 && m <= 11) {
+                return new Date(y, m, isNaN(d) ? 1 : d);
+            }
+        }
+
+        // 2. Client-side pathname (/calendar/2026/11/24 or /calendar/2026/11)
+        if (typeof window !== 'undefined') {
+            const parts = window.location.pathname.replace(/^\/+|\/+$/g, '').split('/');
+            if (parts[0] === 'calendar' && parts.length > 1) {
+                const y = parseInt(parts[1], 10);
+                const m = parts[2] ? parseInt(parts[2], 10) - 1 : now.getMonth();
+                const d = parts[3] ? parseInt(parts[3], 10) : 1;
+                if (!isNaN(y) && !isNaN(m) && m >= 0 && m <= 11) {
+                    return new Date(y, m, isNaN(d) ? 1 : d);
+                }
+            }
+        }
+
+        // 3. Fallback to legacy query parameters: ?date=YYYY-MM-DD or ?year=YYYY&month=MM
         const dateParam = searchParams.get('date');
         const yearParam = searchParams.get('year');
         const monthParam = searchParams.get('month');
@@ -228,6 +255,30 @@ export function LunarCalendarWidget() {
     const [mounted, setMounted] = useState(false);
     const [locale, setLocale] = useState(() => searchParams.get('locale') || 'km-KH');
     const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
+        // 1. Initial slug passed from server / static page params (day specified)
+        if (initialSlug && initialSlug.length >= 3) {
+            const y = parseInt(initialSlug[0], 10);
+            const m = parseInt(initialSlug[1], 10) - 1;
+            const d = parseInt(initialSlug[2], 10);
+            if (!isNaN(y) && !isNaN(m) && !isNaN(d) && m >= 0 && m <= 11 && d >= 1 && d <= 31) {
+                return new Date(y, m, d);
+            }
+        }
+
+        // 2. Client-side pathname (/calendar/2026/11/24)
+        if (typeof window !== 'undefined') {
+            const parts = window.location.pathname.replace(/^\/+|\/+$/g, '').split('/');
+            if (parts[0] === 'calendar' && parts.length >= 4) {
+                const y = parseInt(parts[1], 10);
+                const m = parseInt(parts[2], 10) - 1;
+                const d = parseInt(parts[3], 10);
+                if (!isNaN(y) && !isNaN(m) && !isNaN(d) && m >= 0 && m <= 11 && d >= 1 && d <= 31) {
+                    return new Date(y, m, d);
+                }
+            }
+        }
+
+        // 3. Fallback to legacy ?date=
         const dateParam = searchParams.get('date');
         if (dateParam) {
             const [y, m, d] = dateParam.split('-').map(Number);
@@ -247,18 +298,27 @@ export function LunarCalendarWidget() {
         setMounted(true);
     }, []);
 
-    // Fast non-blocking URL search params helper
+    // Clean Path URL helper: formats as /calendar/YYYY/MM/DD or /calendar/YYYY/MM
     const updateUrlParams = useCallback((targetDate: Date, selDate?: Date | null, loc?: string) => {
+        const y = targetDate.getFullYear();
+        const m = String(targetDate.getMonth() + 1).padStart(2, '0');
+
+        let targetPath: string;
+        if (selDate) {
+            const sy = selDate.getFullYear();
+            const sm = String(selDate.getMonth() + 1).padStart(2, '0');
+            const sd = String(selDate.getDate()).padStart(2, '0');
+            targetPath = `/calendar/${sy}/${sm}/${sd}`;
+        } else {
+            targetPath = `/calendar/${y}/${m}`;
+        }
+
         const currentSearch = typeof window !== 'undefined' ? window.location.search : searchParams.toString();
         const params = new URLSearchParams(currentSearch);
-        params.set('year', String(targetDate.getFullYear()));
-        params.set('month', String(targetDate.getMonth() + 1)); // 1-indexed
-
-        if (selDate) {
-            params.set('date', formatDateKey(selDate));
-        } else {
-            params.delete('date');
-        }
+        // Clear legacy query parameters
+        params.delete('year');
+        params.delete('month');
+        params.delete('date');
 
         if (loc && loc !== 'km-KH') {
             params.set('locale', loc);
@@ -267,15 +327,15 @@ export function LunarCalendarWidget() {
         }
 
         const queryString = params.toString();
-        const targetUrl = `${pathname}${queryString ? `?${queryString}` : ''}`;
+        const targetUrl = `${targetPath}${queryString ? `?${queryString}` : ''}`;
         try {
             window.history.replaceState(null, '', targetUrl);
         } catch {
             router.replace(targetUrl, { scroll: false });
         }
-    }, [pathname, router, searchParams]);
+    }, [router, searchParams]);
 
-    // Handle browser back/forward or external URL changes
+    // Handle browser back/forward, route changes, or legacy query string migration
     useEffect(() => {
         const dateParam = searchParams.get('date');
         const yearParam = searchParams.get('year');
@@ -286,33 +346,57 @@ export function LunarCalendarWidget() {
             setLocale(localeParam);
         }
 
-        if (dateParam) {
-            const [y, m, d] = dateParam.split('-').map(Number);
-            if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
-                const target = new Date(y, m - 1, d);
-                setCurrentDate(target);
-                setSelectedDate(target);
+        // If legacy query params are present, migrate immediately to clean path
+        if (dateParam || yearParam || monthParam) {
+            let targetDate: Date | null = null;
+            let selDate: Date | null = null;
+
+            if (dateParam) {
+                const [y, m, d] = dateParam.split('-').map(Number);
+                if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+                    targetDate = new Date(y, m - 1, d);
+                    selDate = targetDate;
+                }
+            } else if (yearParam || monthParam) {
+                const y = yearParam ? parseInt(yearParam, 10) : currentDate.getFullYear();
+                let m = currentDate.getMonth();
+                if (monthParam) {
+                    m = monthParam.includes('-')
+                        ? parseInt(monthParam.split('-')[1], 10) - 1
+                        : parseInt(monthParam, 10) - 1;
+                }
+                if (!isNaN(y) && !isNaN(m) && m >= 0 && m <= 11) {
+                    targetDate = new Date(y, m, 1);
+                }
+            }
+
+            if (targetDate) {
+                setCurrentDate(targetDate);
+                setSelectedDate(selDate);
+                updateUrlParams(targetDate, selDate, localeParam || locale);
                 return;
             }
         }
 
-        if (yearParam || monthParam) {
-            const y = yearParam ? parseInt(yearParam, 10) : currentDate.getFullYear();
-            let m = currentDate.getMonth();
-            if (monthParam) {
-                if (monthParam.includes('-')) {
-                    m = parseInt(monthParam.split('-')[1], 10) - 1;
+        // Parse path segments when pathname changes (e.g., /calendar/2026/11/24)
+        const parts = pathname.replace(/^\/+|\/+$/g, '').split('/');
+        if (parts[0] === 'calendar' && parts.length > 1) {
+            const y = parseInt(parts[1], 10);
+            const m = parts[2] ? parseInt(parts[2], 10) - 1 : undefined;
+            const d = parts[3] ? parseInt(parts[3], 10) : undefined;
+
+            if (!isNaN(y) && m !== undefined && !isNaN(m) && m >= 0 && m <= 11) {
+                if (d !== undefined && !isNaN(d) && d >= 1 && d <= 31) {
+                    const target = new Date(y, m, d);
+                    setCurrentDate(target);
+                    setSelectedDate(target);
                 } else {
-                    m = parseInt(monthParam, 10) - 1;
-                }
-            }
-            if (!isNaN(y) && !isNaN(m) && m >= 0 && m <= 11) {
-                if (currentDate.getFullYear() !== y || currentDate.getMonth() !== m) {
                     setCurrentDate(new Date(y, m, 1));
+                    setSelectedDate(null);
                 }
             }
         }
-    }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [pathname, searchParams, updateUrlParams]);
 
     // Fetch public holidays dynamically for the current year
     useEffect(() => {
@@ -430,33 +514,28 @@ export function LunarCalendarWidget() {
         return days;
     }, [currentDate, holidaysMap, getLunarInfo, todayKey]);
 
-    const handleSelectDate = useCallback((date: Date) => {
-        setSelectedDate(date);
-        updateUrlParams(currentDate, date, locale);
-    }, [currentDate, locale, updateUrlParams]);
-
     const nextMonth = useCallback(() => {
         startTransition(() => {
             const next = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
             setCurrentDate(next);
-            updateUrlParams(next, selectedDate, locale);
+            updateUrlParams(next, null, locale);
         });
-    }, [currentDate, selectedDate, locale, updateUrlParams]);
+    }, [currentDate, locale, updateUrlParams]);
 
     const prevMonth = useCallback(() => {
         startTransition(() => {
             const prev = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
             setCurrentDate(prev);
-            updateUrlParams(prev, selectedDate, locale);
+            updateUrlParams(prev, null, locale);
         });
-    }, [currentDate, selectedDate, locale, updateUrlParams]);
+    }, [currentDate, locale, updateUrlParams]);
 
     const jumpToToday = useCallback(() => {
         startTransition(() => {
             const now = new Date();
             setCurrentDate(now);
-            setSelectedDate(now);
-            updateUrlParams(now, now, locale);
+            setSelectedDate(null);
+            updateUrlParams(now, null, locale);
         });
     }, [locale, updateUrlParams]);
 
@@ -464,13 +543,8 @@ export function LunarCalendarWidget() {
         const value = newLocale || 'km-KH';
         startTransition(() => {
             setLocale(value);
-            updateUrlParams(currentDate, selectedDate, value);
+            updateUrlParams(currentDate, null, value);
         });
-    };
-
-    const handleCloseDrawer = () => {
-        setSelectedDate(null);
-        updateUrlParams(currentDate, null, locale);
     };
 
     // Allocate Intl formatters once per locale change (not per cell / per card).
@@ -496,9 +570,6 @@ export function LunarCalendarWidget() {
             return "Lunar Calendar";
         }
     }, [currentDate, locale]);
-
-    const selectedDateKey = selectedDate ? formatDateKey(selectedDate) : null;
-    const selectedDateHoliday = selectedDateKey ? holidaysMap.get(selectedDateKey) : null;
 
     if (!mounted) return null;
 
@@ -641,20 +712,12 @@ export function LunarCalendarWidget() {
                     ) : (
                         <div className="grid grid-cols-7 gap-1 sm:gap-1.5 md:gap-2 animate-in fade-in duration-150">
                             {calendarData.map(cell => (
-                                <DayCell key={cell.dateKey} cell={cell} onSelect={handleSelectDate} />
+                                <DayCell key={cell.dateKey} cell={cell} />
                             ))}
                         </div>
                     )}
                 </div>
             </div>
-
-            <DateDetailPopup
-                selectedDate={selectedDate}
-                holiday={selectedDateHoliday || undefined}
-                locale={locale}
-                intlFormatters={intlFormatters}
-                onClose={handleCloseDrawer}
-            />
         </div>
     );
 }
