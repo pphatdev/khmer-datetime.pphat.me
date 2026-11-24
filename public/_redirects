@@ -1,0 +1,2 @@
+# Cloudflare Pages SPA Rewrite for dynamic calendar routes
+/calendar/*  /calendar.html  200
