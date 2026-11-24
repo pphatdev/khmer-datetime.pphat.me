@@ -50,7 +50,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         // Month filters for calendar and public holidays
         for (let month = 1; month <= 12; month++) {
             entries.push({
-                url: `${baseUrl}/calendar?year=${year}&month=${month}`,
+                url: `${baseUrl}/calendar/${year}/${String(month).padStart(2, '0')}`,
                 lastModified: now,
                 changeFrequency: 'weekly',
                 priority: year === currentYear ? 0.8 : 0.6,
@@ -64,13 +64,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             });
         }
 
-        // Specific Public Holiday date entries (?date=YYYY-MM-DD)
+        // Specific Public Holiday date entries (/calendar/YYYY/MM/DD)
         try {
             const holidays = await fetchCambodiaHolidays(year);
             for (const h of holidays) {
                 if (h.date) {
                     entries.push({
-                        url: `${baseUrl}/calendar?date=${h.date}`,
+                        url: `${baseUrl}/calendar/${h.date.replace(/-/g, '/')}`,
                         lastModified: now,
                         changeFrequency: 'monthly',
                         priority: year === currentYear ? 0.85 : 0.65,
