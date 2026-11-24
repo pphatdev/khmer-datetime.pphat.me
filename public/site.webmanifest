@@ -1,7 +1,7 @@
 {
-  "name": "KH DateTime Formatter",
-  "short_name": "KH DateTime",
-  "description": "Modern Khmer Lunar & Gregorian DateTime Localization Utility",
+  "name": "Khmer Calendar & DateTime (ប្រតិទិនខ្មែរ)",
+  "short_name": "KH Calendar",
+  "description": "Khmer Lunar Calendar, Today's Date in Cambodia, and DateTime Localization Utility",
   "id": "/",
   "start_url": "/",
   "scope": "/",

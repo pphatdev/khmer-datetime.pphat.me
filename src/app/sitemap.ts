@@ -33,8 +33,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
     ];
 
-    // Generate date-filtered sitemap entries for previous, current, and upcoming years
-    const targetYears = [currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
+    // Generate date-filtered sitemap entries for past, current, and upcoming years (2024-2028)
+    const targetYears = [currentYear - 2, currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
 
     for (const year of targetYears) {
         // Year filter for holidays
@@ -48,14 +48,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         // Month filters for calendar and public holidays
         for (let month = 1; month <= 12; month++) {
             entries.push({
-                url: `${baseUrl}/calendar?year=${year}&amp;month=${month}`,
+                url: `${baseUrl}/calendar?year=${year}&month=${month}`,
                 lastModified: now,
                 changeFrequency: 'weekly',
                 priority: year === currentYear ? 0.8 : 0.6,
             });
 
             entries.push({
-                url: `${baseUrl}/holidays?year=${year}&amp;month=${month}`,
+                url: `${baseUrl}/holidays?year=${year}&month=${month}`,
                 lastModified: now,
                 changeFrequency: 'monthly',
                 priority: year === currentYear ? 0.75 : 0.55,

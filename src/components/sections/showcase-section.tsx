@@ -44,9 +44,9 @@ export function ShowcaseSection({ mounted, now }: ShowcaseSectionProps) {
             <div className="md:col-span-2 bg-neutral-50/80 dark:bg-neutral-900/40 backdrop-blur-xl border border-neutral-200 dark:border-white/5 rounded-3xl p-8 hover:border-neutral-300 dark:hover:border-white/10 transition-colors group">
                 <div className="flex items-center justify-between mb-8">
                     <span className="text-xs uppercase tracking-widest text-neutral-500 font-semibold flex items-center gap-2">
-                        <Clock className="w-4 h-4" /> Live Time
+                        <Clock className="w-4 h-4" /> Today in Cambodia • ម៉ោង និង ថ្ងៃខែ
                     </span>
-                    <span className="px-2 py-1 rounded bg-black/5 dark:bg-white/5 text-neutral-500 dark:text-neutral-400 text-xs font-mono">km-KH</span>
+                    <span className="px-2 py-1 rounded bg-black/5 dark:bg-white/5 text-neutral-500 dark:text-neutral-400 text-xs font-mono">km-KH (UTC+7)</span>
                 </div>
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium text-neutral-900 dark:text-white tracking-tight leading-tight group-hover:text-teal-700 dark:group-hover:text-teal-50 transition-colors">
                     {liveTime}
@@ -56,7 +56,7 @@ export function ShowcaseSection({ mounted, now }: ShowcaseSectionProps) {
             {/* Lunar Date Card */}
             <div className="bg-neutral-50/80 dark:bg-neutral-900/40 backdrop-blur-xl border border-neutral-200 dark:border-white/5 rounded-3xl p-8 hover:border-neutral-300 dark:hover:border-white/10 transition-colors group">
                 <span className="text-xs uppercase tracking-widest text-neutral-500 font-semibold block mb-8">
-                    Lunar Date
+                    Khmer Lunar Date Today • កាលបរិច្ឆេទចន្ទគតិ
                 </span>
                 <h3 className="text-2xl sm:text-3xl font-medium text-neutral-700 dark:text-neutral-200 leading-tight">
                     {lunarTime}

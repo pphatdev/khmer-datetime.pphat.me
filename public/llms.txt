@@ -1,12 +1,20 @@
-# @pphatdev/format-datetime
+# @pphatdev/format-datetime & Khmer Lunar Calendar
 
-> A zero-dependency TypeScript library for formatting dates and times into localized strings using native JavaScript APIs (`Intl.DateTimeFormat`, `Date`). Features first-class Khmer (`km-KH`) localization with native Khmer numerals, six time-of-day phrases, and full Khmer lunar calendar arithmetic — Buddhist Era (BE), Jolak Sakaraj (JS), 12-animal cycle, 10-era Sak cycle, waxing/waning moon phases, and precise Khmer New Year (Moha Songkran) calculations.
+> A zero-dependency TypeScript library and web application for Khmer Lunar Calendar calculations, today's date in Cambodia (កាលបរិច្ឆេទខ្មែរ / Lịch Khmer / Calendrier Khmer), Buddhist Era (BE), and Cambodian public holidays. Features first-class Khmer (`km-KH`) localization with native Khmer numerals, six time-of-day phrases, and full astronomical Soriyatra lunar arithmetic — Buddhist Era (BE), Jolak Sakaraj (JS), 12-animal cycle, 10-era Sak cycle, waxing/waning moon phases, and precise Khmer New Year (Moha Songkran) calculations.
 
 - **NPM Package**: `@pphatdev/format-datetime`
 - **JSR Package**: `jsr:@pphatdev/format-datetime`
 - **Repository**: https://github.com/pphatdev/khmer-datetime
-- **Demo & Documentation**: https://format-datetime.pphat.me
+- **Demo & Web Calendar**: https://format-datetime.pphat.me
+- **Khmer Lunar Calendar**: https://format-datetime.pphat.me/calendar
+- **Cambodia Public Holidays**: https://format-datetime.pphat.me/holidays
 - **Full LLM Context**: [llms-full.txt](https://raw.githubusercontent.com/pphatdev/khmer-datetime/master/llms-full.txt)
+
+### Multilingual & Alternate Names
+- **Khmer**: ប្រតិទិន, ប្រតិទិនខ្មែរ, ប្រតិទិនចន្ទគតិខ្មែរ, ថ្ងៃខែខ្មែរ, ថ្ងៃនេះជាថ្ងៃអ្វី (common search typo: ប្រត្តិទិន)
+- **Vietnamese (Khmer Krom)**: Lịch Khmer, Lịch Khmer hôm nay, Lịch âm Khmer, Lịch Phật giáo Khmer
+- **French**: Calendrier Khmer, Calendrier lunaire khmer, Fêtes cambodgiennes
+- **English**: Khmer Calendar, Khmer Lunar Calendar, What day is today in Cambodia, Buddhist Calendar
 
 ---
 

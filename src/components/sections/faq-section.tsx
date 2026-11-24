@@ -16,6 +16,52 @@ export interface FaqItem {
 
 export const FAQ_ITEMS: FaqItem[] = [
     {
+        id: "what-day-is-today-in-cambodia",
+        category: "lunar",
+        isFeatured: true,
+        badge: "Today's Date & Holy Days",
+        bestPoint: "Live synchronization of Gregorian dates with the traditional Khmer lunar date, Buddhist Era, and Buddhist Holy Days (ថ្ងៃសីល).",
+        question: "What day is today in Cambodia and in the Khmer Lunar Calendar?",
+        answer: "In Cambodia (UTC+7), today's date is tracked using both the Gregorian solar calendar and the traditional Khmer lunar calendar (ថ្ងៃខែចន្ទគតិ). The lunar date indicates whether the moon is waxing (កើត, 1 to 15) or waning (រោច, 1 to 14/15), the current Khmer lunar month (such as ចេត្រ, ពិសាខ, or កត្តិក), the 12-animal year cycle (ឆ្នាំជូត to ឆ្នាំកុរ), and the Sak era. You can see the live Khmer date and time right at the top of this website or via the interactive /calendar page.",
+        codeExample: `import { FormatDateTime, KhmerDate } from '@pphatdev/format-datetime';
+
+// 1. Get today's full Khmer Lunar Date
+const today = new KhmerDate();
+console.log(today.toLunarDate('full'));
+// e.g. "ថ្ងៃពុធ ៥កើត ខែពិសាខ ឆ្នាំរោង ឆស័ក ពុទ្ធសករាជ ២៥៧០"
+
+// 2. Format localized Cambodian time with traditional time-of-day phrase
+const now = new FormatDateTime(new Date(), 'YYYY-MM-DD hh:mm:ss A', 'km-KH');
+console.log(now.formatDate());`
+    },
+    {
+        id: "khmer-calendar-lich-khmer-calendrier",
+        category: "general",
+        isFeatured: true,
+        badge: "Multilingual • Lịch Khmer • Calendrier",
+        bestPoint: "Comprehensive support for Khmer Krom (Lịch Khmer hôm nay) and the international Cambodian diaspora (Calendrier Khmer).",
+        question: "How does the Khmer Calendar (ប្រតិទិនខ្មែរ / Lịch Khmer / Calendrier Khmer) count months, years, and holy days?",
+        answer: "The Khmer calendar (also searched as ប្រតិទិន, ប្រត្តិទិន, Lịch Khmer in Vietnam, or Calendrier Khmer in French) is a lunisolar calendar based on the classical Soriyatra treatise. Months alternate between 29 days (odd months, waning up to 14រោច) and 30 days (even months, waning up to 15រោច). Years are anchored to the Buddhist Era (BE, starting 544 BCE with the Visakha Bochea transition) and Jolak Sakaraj (JS, transitioning at Moha Songkran in mid-April). Buddhist Holy Days (ថ្ងៃសីល) occur on the 8th waxing, 15th waxing (full moon), 8th waning, and end-of-month waning day.",
+        codeExample: `// Check whether a date is a Buddhist Holy Day (ថ្ងៃសីល)
+import { KhmerDate } from '@pphatdev/format-datetime';
+
+const khDate = new KhmerDate(new Date('2026-05-31'));
+console.log(khDate.isHolyDay()); // true (Full Moon / ពេញបូណ៌មី ថ្ងៃសីល)`
+    },
+    {
+        id: "khmer-calendar-2026-2025-dates",
+        category: "lunar",
+        badge: "2026 & 2025 Milestones",
+        bestPoint: "Computes exact moments for Moha Songkran, Visakha Bochea, Pchum Ben, and Water Festival for 2026, 2025, and beyond.",
+        question: "What are the key dates for Khmer Calendar 2026 and 2025 (ប្រតិទិន ខ្មែរ 2026)?",
+        answer: "For Khmer Calendar 2026 (ព.ស. ២៥៦៩-២៥៧០), major events include: Khmer New Year (Moha Songkran) beginning around April 14, 2026; Visakha Bochea in May 2026; Pchum Ben in Autumn; and the Water Festival (Bon Om Touk) during the full moon of Kattik (November 2026). Our /calendar and /holidays pages provide full monthly views for 2024, 2025, 2026, and upcoming years with exact lunar day counts.",
+        codeExample: `import { KhmerDate } from '@pphatdev/format-datetime';
+
+// Predict the exact moment of Moha Songkran 2026
+const songkran2026 = KhmerDate.getKhNewYearMoment(2026);
+console.log(songkran2026.toISOString());`
+    },
+    {
         id: "what-is-format-datetime",
         category: "general",
         isFeatured: true,

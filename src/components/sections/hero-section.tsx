@@ -26,18 +26,18 @@ export function HeroSection() {
         <section className="flex flex-col items-center text-center max-w-3xl w-full pt-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-teal-500/30 bg-teal-500/10 text-teal-700 dark:text-teal-300 text-xs font-medium mb-8">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>The Ultimate Khmer Date Utility</span>
+                <span>The Ultimate Khmer Calendar & Date Utility • ប្រតិទិនខ្មែរ</span>
             </div>
 
             <h1 className="text-4xl sm:text-6xl md:text-6xl font-extrabold tracking-tight mb-6 leading-[1.1]">
                 The easiest way to handle <br className="hidden sm:block" />
                 <span className="bg-clip-text text-transparent bg-linear-to-r from-sky-400 via-teal-400 to-green-400">
-                    Khmer & Lunar Dates.
+                    Khmer & Lunar Calendars.
                 </span>
             </h1>
 
             <p className="text-sm sm:text-lg text-neutral-600 dark:text-neutral-400 mb-10 max-w-3xl leading-relaxed">
-                Stop struggling with complex calendar logic. Easily format local times, calculate precise Lunar phases, and predict the exact moment of the Khmer New Year with a single, elegant library.
+                Check what day is today in Cambodia, explore traditional Khmer lunar dates (ប្រតិទិនចន្ទគតិ), convert Buddhist Era years, and format dates with zero dependencies in TypeScript and modern JavaScript.
             </p>
             <div className="w-full max-w-md mx-auto flex flex-col gap-2">
                 <div className="flex items-center gap-1 bg-neutral-100/80 dark:bg-neutral-900/40 p-1 rounded-lg border border-neutral-200 dark:border-white/5 w-fit mx-auto">
